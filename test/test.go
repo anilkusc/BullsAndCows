@@ -1,5 +1,5 @@
-// go test -v -coverpkg ./... ./...
-package database_test
+//go test ./database/... -v --cover
+package test
 
 import (
 	"database/sql"

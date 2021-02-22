@@ -11,6 +11,7 @@ import (
 )
 
 // App method is the main struct for the application
+
 type App struct {
 	Router *mux.Router
 	DB     *sql.DB
@@ -21,7 +22,7 @@ func (a *App) Init(database string, username string, password string) error {
 	log.Println("Creating Router...")
 	a.Router = mux.NewRouter()
 	log.Println("Initializing Routes...")
-	a.initRoutes()
+	a.InitRoutes()
 	if _, err := os.Stat(database); os.IsNotExist(err) {
 		log.Println("Database can not be found.Creating new...")
 		file, err := os.Create(database) // Create SQLite file
@@ -87,6 +88,8 @@ func (a *App) Run(addr string) {
 	log.Println("Serving on: ", addr)
 	log.Fatal(http.ListenAndServe(addr, a.Router))
 }
-func (a *App) initRoutes() {
-	a.Router.HandleFunc("/backend/ReadUser", a.ReadUser).Methods("POST")
+
+// InitRoutes initializes the backend routes.
+func (a *App) InitRoutes() {
+	a.Router.HandleFunc("/backend/ReadUser", a.ReadUserHandler).Methods("POST")
 }

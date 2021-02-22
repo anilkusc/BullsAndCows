@@ -1,18 +1,14 @@
-package database_test
+//go test ./database/... -v --cover
+package database
 
 import (
 	"testing"
 
-	database "github.com/anilkusc/BullsAndCows/database"
-
 	"github.com/anilkusc/BullsAndCows/models"
+	"github.com/anilkusc/BullsAndCows/test"
 
 	_ "github.com/proullon/ramsql/driver"
 )
-
-type Move struct {
-	*database.Move
-}
 
 var m Move
 
@@ -26,7 +22,7 @@ func TestCreateMove(t *testing.T) {
 
 		{session: models.Move{Session: models.Session{Id: 1}, Turn: 0, Action: "Created"}, result: models.Move{Session: models.Session{Id: 1}, Turn: 0, Action: "Created"}, err: nil},
 	}
-	db := CreateDatabase(t, "TestCreateMove")
+	db := test.CreateDatabase(t, "TestCreateMove")
 
 	defer db.Close()
 
@@ -55,7 +51,7 @@ func TestReadMove(t *testing.T) {
 
 		{id: 1, result: models.Move{Session: models.Session{Id: 1}, Turn: 0, Action: "Created"}, err: nil},
 	}
-	db := CreateDatabase(t, "TestReadMove")
+	db := test.CreateDatabase(t, "TestReadMove")
 
 	defer db.Close()
 
@@ -84,7 +80,7 @@ func TestUpdateMove(t *testing.T) {
 
 		{session: models.Move{Session: models.Session{Id: 1}, Turn: 0, Action: "Updated"}, result: models.Move{Session: models.Session{Id: 1}, Turn: 0, Action: "Created"}, err: nil},
 	}
-	db := CreateDatabase(t, "TestUpdateMove")
+	db := test.CreateDatabase(t, "TestUpdateMove")
 
 	defer db.Close()
 
@@ -113,7 +109,7 @@ func TestDeleteMove(t *testing.T) {
 
 		{id: 1, result: models.Move{Session: models.Session{Id: 1}, Turn: 0, Action: "Created"}, err: nil},
 	}
-	db := CreateDatabase(t, "TestDeleteMove")
+	db := test.CreateDatabase(t, "TestDeleteMove")
 
 	defer db.Close()
 

@@ -1,22 +1,16 @@
-// for running =>  go test ./tests/...
-// name should be database_test because we are trying to test database package
-package database_test
+//go test ./database/... -v --cover
+package database
 
 import (
 	"testing"
 
-	//import database package
-	database "github.com/anilkusc/BullsAndCows/database"
 	//import models package
 	"github.com/anilkusc/BullsAndCows/models"
+	"github.com/anilkusc/BullsAndCows/test"
 
 	//import mocking 3. party library
 	_ "github.com/proullon/ramsql/driver"
 )
-
-type User struct {
-	*database.User
-}
 
 // You need to create a user object for using user methods.
 var u User
@@ -35,8 +29,8 @@ func TestReadUser(t *testing.T) {
 		// When give to first parameter(id) 1 , We expect result :1 error nil
 		{id: 2, result: models.User{Id: 2, Name: "testuser"}, err: nil},
 	}
-	// Create Database for this function.It defined in common_test.go file
-	db := CreateDatabase(t, "TestGetUser")
+	// Create Database for this function.It defined in test/test.go file
+	db := test.CreateDatabase(t, "TestGetUser")
 
 	defer db.Close()
 
@@ -49,17 +43,17 @@ func TestReadUser(t *testing.T) {
 			// If test fails give error.It checks expected result and expected error
 			if err != test.err || s != test.result {
 				// Compare expected error and actual error
-				t.Errorf("Error is: %v . Expected: %v", err , test.err,)
+				t.Errorf("Error is: %v . Expected: %v", err, test.err)
 				// Compare expected result and actual result
-				t.Errorf("Result is: %v . Expected: %v",s, test.result)
+				t.Errorf("Result is: %v . Expected: %v", s, test.result)
 			}
 			// if expected error type is not nil we need to compare with actual error different way.
 		} else {
 			if err.Error() != test.err.Error() || s != test.result {
 				// Compare expected error and actual error
-				t.Errorf("Error is: %v . Expected: %v", err , test.err,)
+				t.Errorf("Error is: %v . Expected: %v", err, test.err)
 				// Compare expected result and actual result
-				t.Errorf("Result is: %v . Expected: %v",s, test.result)
+				t.Errorf("Result is: %v . Expected: %v", s, test.result)
 			}
 		}
 	}
