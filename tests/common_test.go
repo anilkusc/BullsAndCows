@@ -1,11 +1,15 @@
+// go test -v -coverpkg ./... ./...
 package database_test
 
 import (
 	"database/sql"
 	"testing"
+	"time"
 
 	_ "github.com/proullon/ramsql/driver"
 )
+
+var now = time.Now().Format("02-Jan-2006")
 
 // Create a database for all test functions.It takes a t and functionName parameterfrom original testing function(from the function it is in).
 

@@ -4,7 +4,6 @@ package database_test
 
 import (
 	"testing"
-	"time"
 
 	database "github.com/anilkusc/BullsAndCows/database"
 
@@ -18,7 +17,6 @@ type Session struct {
 }
 
 var s Session
-var now = time.Now().Format("02-Jan-2006")
 
 func TestCreateSession(t *testing.T) {
 
@@ -78,18 +76,18 @@ func TestReadSession(t *testing.T) {
 }
 func TestUpdateSession(t *testing.T) {
 	tests := []struct {
-		id     int
-		result models.Session
-		err    error
+		session models.Session
+		result  models.Session
+		err     error
 	}{
-		{id: 1, result: models.Session{Id: 1, Date: now, Start: 0, End: 0, Winner: 0}, err: nil},
+		{session: models.Session{Id: 1, Date: now, Start: 0, End: 0, Winner: 0}, result: models.Session{Id: 1, Date: now, Start: 0, End: 0, Winner: 0}, err: nil},
 	}
 	db := CreateDatabase(t, "TestUpdateSession")
 
 	defer db.Close()
 
 	for _, test := range tests {
-		s, err := s.UpdateSession(db, test.id)
+		s, err := s.UpdateSession(db, test.session)
 		if test.err == nil {
 			if err != test.err || s != test.result {
 				t.Errorf("Error is: %v . Expected: %v", err, test.err)

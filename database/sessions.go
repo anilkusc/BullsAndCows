@@ -22,9 +22,8 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 	return session, nil
 
 }
-func (s *Session) UpdateSession(db *sql.DB, id int) (models.Session, error) {
+func (s *Session) UpdateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	var session models.Session
 	return session, nil
 
 }
