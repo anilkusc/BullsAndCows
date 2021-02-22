@@ -18,25 +18,160 @@ func TestReadUserHandler(t *testing.T) {
 		output string
 	}{
 
-		{input: "test", output: "test"},
+		{input: "test", output: "hello"},
 	}
-	//db := CreateDatabase(t, "TestReadUserHandler")
-	//defer db.Close()
-
-	//request := httptest.NewRequest("POST", "/backend/ReadUser", nil)
-	//responseRecorder := httptest.NewRecorder()
-	//ReadUser{test.input}.ServeHTTP(responseRecorder, request)
 
 	for _, test := range tests {
-		//s, err := s.CreateSession(db, test.session)
+		req, err := http.NewRequest("POST", "/backend/ReadUser", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		req, _ := http.NewRequest("POST", "/backend/ReadUserHandler", nil)
-		res := httptest.NewRecorder()
-		a.Router.ServeHTTP(res, req)
+		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(a.ReadUserHandler)
 
-		body, _ := ioutil.ReadAll(res.Body)
+		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method directly and pass in our Request and ResponseRecorder.
+		handler.ServeHTTP(rr, req)
+
+		body, _ := ioutil.ReadAll(rr.Body)
 		if string(body) != test.output {
-			t.Errorf("Response is: %v . Expected: %v", res, test.output)
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
+		}
+	}
+}
+func TestCreateGameHandler(t *testing.T) {
+
+	tests := []struct {
+		input  string
+		output string
+	}{
+
+		{input: "test", output: "hello"},
+	}
+
+	for _, test := range tests {
+		req, err := http.NewRequest("POST", "/backend/CreateGame", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(a.CreateGameHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		body, _ := ioutil.ReadAll(rr.Body)
+		if string(body) != test.output {
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
+		}
+	}
+}
+func TestJoinGameHandler(t *testing.T) {
+
+	tests := []struct {
+		input  string
+		output string
+	}{
+
+		{input: "test", output: "hello"},
+	}
+
+	for _, test := range tests {
+		req, err := http.NewRequest("POST", "/backend/JoinGame", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(a.JoinGameHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		body, _ := ioutil.ReadAll(rr.Body)
+		if string(body) != test.output {
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
+		}
+	}
+}
+func TestStartGameHandler(t *testing.T) {
+
+	tests := []struct {
+		input  string
+		output string
+	}{
+
+		{input: "test", output: "hello"},
+	}
+
+	for _, test := range tests {
+		req, err := http.NewRequest("POST", "/backend/StartGame", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(a.StartGameHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		body, _ := ioutil.ReadAll(rr.Body)
+		if string(body) != test.output {
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
+		}
+	}
+}
+func TestMakePredictionHandler(t *testing.T) {
+
+	tests := []struct {
+		input  string
+		output string
+	}{
+
+		{input: "test", output: "hello"},
+	}
+
+	for _, test := range tests {
+		req, err := http.NewRequest("POST", "/backend/MakePrediction", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(a.MakePredictionHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		body, _ := ioutil.ReadAll(rr.Body)
+		if string(body) != test.output {
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
+		}
+	}
+}
+func TestConnectHandler(t *testing.T) {
+
+	tests := []struct {
+		input  string
+		output string
+	}{
+
+		{input: "test", output: "hello"},
+	}
+
+	for _, test := range tests {
+		req, err := http.NewRequest("POST", "/backend/Connect", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(a.ConnectHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		body, _ := ioutil.ReadAll(rr.Body)
+		if string(body) != test.output {
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
 		}
 	}
 }
