@@ -3,7 +3,6 @@
 package database_test
 
 import (
-	"database/sql"
 	"testing"
 
 	//import database package
@@ -22,29 +21,6 @@ type User struct {
 // You need to create a user object for using user methods.
 var u User
 
-// Create a database for all test functions.It takes a t and functionName parameterfrom original testing function(from the function it is in).
-func CreateDatabase(t *testing.T, functionName string) *sql.DB {
-	// Create pseudo database with queries.
-	var batches = []string{
-		`CREATE TABLE Users (Id INT PRIMARY KEY AUTOINCREMENT NOT NULL, Name TEXT NOT NULL UNIQUE);`,
-		`INSERT INTO Users (Id,Name) VALUES (1, 'anonymous');`,
-		`INSERT INTO Users (Id,Name) VALUES (2, 'testuser');`,
-	}
-	//open pseudo database for function
-	db, err := sql.Open("ramsql", functionName)
-	if err != nil {
-		t.Fatalf("Error creating mock sql : %s\n", err)
-	}
-	// Exec every line of batch and create database
-	for _, b := range batches {
-		_, err = db.Exec(b)
-		if err != nil {
-			t.Fatalf("Error exec query in mock query: %s\n", err)
-		}
-	}
-	return db
-}
-
 //Test for ReadUser function.
 func TestReadUser(t *testing.T) {
 	// Specify test variables and expected results.
@@ -59,7 +35,7 @@ func TestReadUser(t *testing.T) {
 		// When give to first parameter(id) 1 , We expect result :1 error nil
 		{id: 2, result: models.User{Id: 2, Name: "testuser"}, err: nil},
 	}
-	// Create Database for this function.
+	// Create Database for this function.It defined in common_test.go file
 	db := CreateDatabase(t, "TestGetUser")
 
 	defer db.Close()

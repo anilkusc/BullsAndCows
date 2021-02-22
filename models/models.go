@@ -3,9 +3,9 @@ package models
 type Session struct {
 	Id     int    `json:"id"`
 	Date   string `json:"id"`
-	Start  int    `json:"start"` // Is Game Started or not.0 or 1.
-	End    int    `json:"end"`   // Is Game ended or not.0 or 1
-	Winner int    `json:"end"`   // If End is 1 there should be a winner.It can 0(Not Ended),1,2
+	Start  int    `json:"start"`  // Is Game Started or not.0 or 1.
+	End    int    `json:"end"`    // Is Game ended or not.0 or 1
+	Winner int    `json:"winner"` // If End is 1 there should be a winner.It can be 0(Not Ended),1,2
 }
 
 type User struct {
