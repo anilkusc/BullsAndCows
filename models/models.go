@@ -17,7 +17,7 @@ type Clue struct {
 	Positive string `json:"positive"`
 	Negative string `json:"negative"`
 }
-type Game struct {
+type Move struct {
 	Session       `json:"session"`
 	Clue          `json:"clue"` // Clues like +1/-1
 	Turn          int           `json:"turn"`           // Turn Count

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	models "github.com/anilkusc/BullsAndCows/models"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type User struct {

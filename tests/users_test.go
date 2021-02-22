@@ -8,9 +8,8 @@ import (
 
 	//import database package
 	database "github.com/anilkusc/BullsAndCows/database"
-	"github.com/anilkusc/BullsAndCows/models"
-
 	//import models package
+	"github.com/anilkusc/BullsAndCows/models"
 
 	//import mocking 3. party library
 	_ "github.com/proullon/ramsql/driver"
@@ -50,7 +49,8 @@ func CreateDatabase(t *testing.T, functionName string) *sql.DB {
 func TestReadUser(t *testing.T) {
 	// Specify test variables and expected results.
 	tests := []struct {
-		id     int
+		id int
+		// we need to use models.User for passing to object.This is different with "database.User".
 		result models.User
 		err    error
 	}{
