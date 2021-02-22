@@ -16,10 +16,10 @@ func CreateDatabase(t *testing.T, functionName string) *sql.DB {
 		`INSERT INTO Users (Name) VALUES ('anonymous');`,
 		`INSERT INTO Users (Name) VALUES ('testuser');`,
 		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
-		`INSERT INTO Sessions (Date,Winner) VALUES ('Now',0);`,
+		//`INSERT INTO Sessions (Date,Winner) VALUES ('Now',0);`,
 		//It is not support foreign key
 		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER ,Negative INTEGER ,Turn INTEGER NOT NULL,Player1 TEXT,Player2 TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Prediction INTEGER,Action TEXT);`,
-		`INSERT INTO Moves (SessionId,Turn,Action) VALUES (1,0,'Created');`,
+		//`INSERT INTO Moves (SessionId,Turn,Action) VALUES (1,0,'Created');`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", functionName)

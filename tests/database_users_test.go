@@ -49,17 +49,17 @@ func TestReadUser(t *testing.T) {
 			// If test fails give error.It checks expected result and expected error
 			if err != test.err || s != test.result {
 				// Compare expected error and actual error
-				t.Errorf("Error is: %v . Expected: %v", test.err, err)
+				t.Errorf("Error is: %v . Expected: %v", err , test.err,)
 				// Compare expected result and actual result
-				t.Errorf("Result is: %v . Expected: %v", test.result, s)
+				t.Errorf("Result is: %v . Expected: %v",s, test.result)
 			}
 			// if expected error type is not nil we need to compare with actual error different way.
 		} else {
 			if err.Error() != test.err.Error() || s != test.result {
 				// Compare expected error and actual error
-				t.Errorf("Error is: %v . Expected: %v", test.err, err)
+				t.Errorf("Error is: %v . Expected: %v", err , test.err,)
 				// Compare expected result and actual result
-				t.Errorf("Result is: %v . Expected: %v", test.result, s)
+				t.Errorf("Result is: %v . Expected: %v",s, test.result)
 			}
 		}
 	}
