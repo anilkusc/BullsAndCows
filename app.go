@@ -10,11 +10,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// App method is the main struct for the application
 type App struct {
 	Router *mux.Router
 	DB     *sql.DB
 }
 
+// Init method is initialized the configs,routes,etc.
 func (a *App) Init(database string, username string, password string) error {
 	log.Println("Creating Router...")
 	a.Router = mux.NewRouter()
@@ -80,11 +82,11 @@ func (a *App) Init(database string, username string, password string) error {
 	}
 }
 
+// Run method runs the application with specified parameters
 func (a *App) Run(addr string) {
 	log.Println("Serving on: ", addr)
 	log.Fatal(http.ListenAndServe(addr, a.Router))
 }
-
 func (a *App) initRoutes() {
 	a.Router.HandleFunc("/backend/ReadUser", a.ReadUser).Methods("POST")
 }
