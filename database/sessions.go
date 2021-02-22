@@ -13,25 +13,24 @@ type Session struct {
 
 func (s *Session) CreateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	var user models.Session
-	return user, nil
+	return session, nil
 
 }
-func (s *Session) ReadSession(db *sql.DB, session models.Session) (models.Session, error) {
+func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 
-	var user models.Session
-	return user, nil
-
-}
-func (s *Session) UpdateSession(db *sql.DB, session models.Session) (models.Session, error) {
-
-	var user models.Session
-	return user, nil
+	var session models.Session
+	return session, nil
 
 }
-func (s *Session) DeleteSession(db *sql.DB, session models.Session) (models.Session, error) {
+func (s *Session) UpdateSession(db *sql.DB, id int) (models.Session, error) {
 
-	var user models.Session
-	return user, nil
+	var session models.Session
+	return session, nil
+
+}
+func (s *Session) DeleteSession(db *sql.DB, id int) (models.Session, error) {
+
+	var session models.Session
+	return session, nil
 
 }
