@@ -11,14 +11,13 @@ import (
 )
 
 // App method is the main struct for the application
-
 type App struct {
 	Router *mux.Router
 	DB     *sql.DB
 }
 
 // Init method is initialized the configs,routes,etc.
-func (a *App) Init(database string, username string, password string) error {
+func (a *App) Init(database string) error {
 	log.Println("Creating Router...")
 	a.Router = mux.NewRouter()
 	log.Println("Initializing Routes...")

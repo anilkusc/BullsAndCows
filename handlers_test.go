@@ -9,8 +9,6 @@ import (
 	_ "github.com/proullon/ramsql/driver"
 )
 
-var a App
-
 func TestReadUserHandler(t *testing.T) {
 
 	tests := []struct {
