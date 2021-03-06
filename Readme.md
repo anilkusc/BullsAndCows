@@ -24,5 +24,3 @@ Further Information: https://en.wikipedia.org/wiki/Bulls_and_Cows
 
 ## Scoring System
 TODO: will be implemented
-
-TODO: main.go ve app.go testleri de yazılıp coverage %100 olacak
