@@ -14,11 +14,11 @@ type User struct {
 
 func (u *User) CreateUser(db *sql.DB, user models.User) (models.User, error) {
 
-	statement, err := db.Prepare("INSERT INTO Users (Id,Name) VALUES(?,?)")
+	statement, err := db.Prepare("INSERT INTO Users (Name) VALUES(?)")
 	if err != nil {
 		return user, err
 	}
-	statement.Exec(user.Id, user.Name)
+	statement.Exec(user.Name)
 	statement.Close()
 	return user, nil
 
@@ -49,11 +49,11 @@ func (u *User) ReadUser(db *sql.DB, id int) (models.User, error) {
 }
 func (u *User) UpdateUser(db *sql.DB, user models.User) (models.User, error) {
 
-	statement, err := db.Prepare("UPDATE Users SET Id=?,Name=?")
+	statement, err := db.Prepare("UPDATE Users SET Name=? where Id=?")
 	if err != nil {
 		return user, err
 	}
-	statement.Exec(user.Id, user.Name)
+	statement.Exec(user.Name, user.Id)
 	statement.Close()
 
 	return user, nil

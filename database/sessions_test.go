@@ -2,6 +2,7 @@
 package database
 
 import (
+	"reflect"
 	"testing"
 	"time"
 
@@ -22,7 +23,7 @@ func TestCreateSession(t *testing.T) {
 		err     error
 	}{
 
-		{session: models.Session{Date: now, Start: 0, End: 0, Winner: 0}, result: models.Session{Id: 1, Date: now, Start: 0, End: 0, Winner: 0}, err: nil},
+		{session: models.Session{Date: now}, result: models.Session{Id: 0, Date: now, Start: 0, End: 0, Winner: 0}, err: nil},
 	}
 	db := test.CreateDatabase(t, "TestCreateSession")
 
@@ -118,6 +119,32 @@ func TestDeleteSession(t *testing.T) {
 			}
 		} else {
 			if err.Error() != test.err.Error() || s != test.result {
+				t.Errorf("Error is: %v . Expected: %v", err, test.err)
+				t.Errorf("Result is: %v . Expected: %v", s, test.result)
+			}
+		}
+	}
+}
+func TestListSessions(t *testing.T) {
+	tests := []struct {
+		result []models.Session
+		err    error
+	}{
+		{result: []models.Session{{Id: 1, Date: now, End: 0, Winner: 0}}, err: nil},
+	}
+	db := test.CreateDatabase(t, "TestListSessions")
+
+	defer db.Close()
+
+	for _, test := range tests {
+		s, err := s.ListSessions(db)
+		if test.err == nil {
+			if err != test.err || reflect.DeepEqual(s, test.result) != true {
+				t.Errorf("Error is: %v . Expected: %v", err, test.err)
+				t.Errorf("Result is: %v . Expected: %v", s, test.result)
+			}
+		} else {
+			if err.Error() != test.err.Error() || reflect.DeepEqual(s, test.result) != true {
 				t.Errorf("Error is: %v . Expected: %v", err, test.err)
 				t.Errorf("Result is: %v . Expected: %v", s, test.result)
 			}

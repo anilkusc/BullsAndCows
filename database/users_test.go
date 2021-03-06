@@ -22,7 +22,7 @@ func TestCreateUser(t *testing.T) {
 		result models.User
 		err    error
 	}{
-		{user: models.User{Id: 1, Name: "myuser"}, result: models.User{Id: 1, Name: "myuser"}, err: nil},
+		{user: models.User{Name: "myuser"}, result: models.User{Id: 0, Name: "myuser"}, err: nil},
 	}
 	db := test.CreateDatabase(t, "TestCreateUser")
 
