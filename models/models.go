@@ -14,11 +14,12 @@ type User struct {
 }
 
 type Clue struct {
-	Positive string `json:"positive"`
-	Negative string `json:"negative"`
+	Positive int `json:"positive"`
+	Negative int `json:"negative"`
 }
 
 type Move struct {
+	Id            int `json:"id"`
 	Session       `json:"session"`
 	Clue          `json:"clue"` // Clues like +1/-1
 	Turn          int           `json:"turn"`           // Turn Count

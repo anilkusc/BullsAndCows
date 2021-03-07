@@ -53,7 +53,7 @@ func (a *App) Init(database string) error {
 		statement.Exec()
 		log.Println("Created Sessions table")
 
-		query = "CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT -1,Negative INTEGER DEFAULT -1,Turn INTEGER NOT NULL,Player1 TEXT,Player2 TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Prediction INTEGER,Action TEXT,FOREIGN KEY (SessionId) REFERENCES Sessions (Id) ON DELETE CASCADE);"
+		query = "CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT -1,Negative INTEGER DEFAULT -1,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Prediction INTEGER,Action TEXT,FOREIGN KEY (SessionId) REFERENCES Sessions (Id) ON DELETE CASCADE);"
 		statement, err = db.Prepare(query)
 		if err != nil {
 			log.Fatal(err)

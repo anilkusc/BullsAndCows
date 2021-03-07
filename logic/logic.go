@@ -12,3 +12,6 @@ func CalculateClue(prediction int, actualNumber int) Clue {
 	var clue Clue
 	return clue
 }
+func CalculateWinner() int {
+	return 0
+}

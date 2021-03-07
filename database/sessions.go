@@ -90,7 +90,7 @@ func (s *Session) ListSessions(db *sql.DB) ([]models.Session, error) {
 		var session models.Session
 		err := rows.Scan(&session.Id, &session.Date, &session.Start, &session.End, &session.Winner)
 		if err != nil {
-			return nil, err
+			return sessions, err
 		}
 
 		sessions = append(sessions, session)
