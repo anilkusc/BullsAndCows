@@ -1,14 +1,14 @@
 package main
 
 import (
-	//"encoding/json"
+	"encoding/json"
 	"io"
-	//"log"
+	"log"
 	"net/http"
-	//"time"
+	"time"
 	//"strconv"
 	"github.com/anilkusc/BullsAndCows/database"
-	//"github.com/anilkusc/BullsAndCows/models"
+	"github.com/anilkusc/BullsAndCows/models"
 )
 
 type User struct {
@@ -28,7 +28,7 @@ var m Move
 // CreateGame method creates new game.
 func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 //TODO: check if game started and smt like that
-/*	var user models.User
+	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		log.Println("Error decoding user")
@@ -71,11 +71,7 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	io.WriteString(w, string(returnValue))
-	return*/
-	returnValue := "hello"
-	io.WriteString(w, string(returnValue))
 	return
-
 }
 
 // JoinGame method add player to a created game.
