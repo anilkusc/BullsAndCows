@@ -4,40 +4,16 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+	"time"
 
+	"github.com/anilkusc/BullsAndCows/test"
 	_ "github.com/proullon/ramsql/driver"
 )
 
-func TestReadUserHandler(t *testing.T) {
+var now = time.Now().Format("02-Jan-2006")
 
-	tests := []struct {
-		input  string
-		output string
-	}{
-
-		{input: "test", output: "hello"},
-	}
-
-	for _, test := range tests {
-		req, err := http.NewRequest("POST", "/backend/ReadUser", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(a.ReadUserHandler)
-
-		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method directly and pass in our Request and ResponseRecorder.
-		handler.ServeHTTP(rr, req)
-
-		body, _ := ioutil.ReadAll(rr.Body)
-		if string(body) != test.output {
-			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
-		}
-	}
-}
 func TestCreateGameHandler(t *testing.T) {
 
 	tests := []struct {
@@ -45,11 +21,13 @@ func TestCreateGameHandler(t *testing.T) {
 		output string
 	}{
 
-		{input: "test", output: "hello"},
+		{input: `{"name": "anil"}`, output: `{"id":0,"session":{"id":0,"date":"`+now+`","start":0,"end":0,"winner":0},"clue":{"positive":0,"negative":0},"turn":0,"player1":{"id":0,"name":"anil"},"player2":{"id":0,"name":"anil"},"player1number":0,"player2number":0,"predictor":0,"prediction":0,"action":"Created"}`},
 	}
+	a.DB = test.CreateDatabase(t, "TestCreateGameHandler")
 
 	for _, test := range tests {
-		req, err := http.NewRequest("POST", "/backend/CreateGame", nil)
+
+		req, err := http.NewRequest("POST", "/backend/CreateGame", strings.NewReader(test.input))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -61,10 +39,11 @@ func TestCreateGameHandler(t *testing.T) {
 
 		body, _ := ioutil.ReadAll(rr.Body)
 		if string(body) != test.output {
-			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
+			t.Errorf("\nResponse is: %v .\nExpected: %v", string(body), test.output)
 		}
 	}
 }
+
 func TestJoinGameHandler(t *testing.T) {
 
 	tests := []struct {
@@ -72,11 +51,11 @@ func TestJoinGameHandler(t *testing.T) {
 		output string
 	}{
 
-		{input: "test", output: "hello"},
+		{input: `{"user": {"name": "anil"},"session": {"id": 1}}`, output: `{"id":2,"session":{"id":1,"date":"`+now+`","start":0,"end":0,"winner":0},"clue":{"positive":0,"negative":0},"turn":2,"player1":{"id":10,"name":"Player1"},"player2":{"id":0,"name":"anil"},"player1number":0,"player2number":0,"predictor":1,"prediction":1111,"action":"Joined"}`},
 	}
-
+	a.DB = test.CreateDatabase(t, "TestJoinGameHandler")
 	for _, test := range tests {
-		req, err := http.NewRequest("POST", "/backend/JoinGame", nil)
+		req, err := http.NewRequest("POST", "/backend/JoinGame",  strings.NewReader(test.input))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -99,11 +78,11 @@ func TestStartGameHandler(t *testing.T) {
 		output string
 	}{
 
-		{input: "test", output: "hello"},
+		{input: `{"id": 1}`, output: "hello"},
 	}
 
 	for _, test := range tests {
-		req, err := http.NewRequest("POST", "/backend/StartGame", nil)
+		req, err := http.NewRequest("POST", "/backend/StartGame",  strings.NewReader(test.input))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -130,7 +109,7 @@ func TestMakePredictionHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		req, err := http.NewRequest("POST", "/backend/MakePrediction", nil)
+		req, err := http.NewRequest("POST", "/backend/MakePrediction",  strings.NewReader(test.input))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -157,7 +136,7 @@ func TestConnectHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		req, err := http.NewRequest("POST", "/backend/Connect", nil)
+		req, err := http.NewRequest("POST", "/backend/Connect",  strings.NewReader(test.input))
 		if err != nil {
 			t.Fatal(err)
 		}

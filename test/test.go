@@ -20,10 +20,10 @@ func CreateDatabase(t *testing.T, functionName string) *sql.DB {
 		`INSERT INTO Users (Name) VALUES ('anonymous');`,
 		`INSERT INTO Users (Name) VALUES ('test');`,
 		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
-		`INSERT INTO Sessions (Date) VALUES ('` + now + `');`,
+		`INSERT INTO Sessions (Id,Date) VALUES ('1','` + now + `');`,
 		//It is not support foreign key
 		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Prediction INTEGER,Action TEXT);`,
-		`INSERT INTO Moves (SessionId,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Predictor,Prediction,Action) VALUES (1,2,10,'Player1',11,'Player2','0000','0000',1,1111,'Created');`,
+		`INSERT INTO Moves (Id,SessionId,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Predictor,Prediction,Action) VALUES (1,1,2,10,'Player1',11,'Player2','0000','0000',1,1111,'Created');`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", functionName)

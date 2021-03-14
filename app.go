@@ -29,16 +29,15 @@ func (a *App) Init(database string) error {
 			log.Fatal(err)
 		}
 		file.Close()
-		db, err := sql.Open("sqlite3", database)
+		a.DB, err = sql.Open("sqlite3", database)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer db.Close()
 
 		log.Println("Created database file: " + database)
 
 		query := "CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name TEXT NOT NULL UNIQUE);"
-		statement, err := db.Prepare(query)
+		statement, err := a.DB.Prepare(query)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,7 +45,7 @@ func (a *App) Init(database string) error {
 		log.Println("Created Users table")
 
 		query = "CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOY NULL DEFAULT 0);"
-		statement, err = db.Prepare(query)
+		statement, err = a.DB.Prepare(query)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -54,7 +53,7 @@ func (a *App) Init(database string) error {
 		log.Println("Created Sessions table")
 
 		query = "CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT -1,Negative INTEGER DEFAULT -1,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Prediction INTEGER,Action TEXT,FOREIGN KEY (SessionId) REFERENCES Sessions (Id) ON DELETE CASCADE);"
-		statement, err = db.Prepare(query)
+		statement, err = a.DB.Prepare(query)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -62,23 +61,22 @@ func (a *App) Init(database string) error {
 		log.Println("Created Moves table")
 
 		enableFK := "PRAGMA foreign_keys=ON;"
-		statement, err = db.Prepare(enableFK)
+		statement, err = a.DB.Prepare(enableFK)
 		if err != nil {
 			log.Fatal(err)
 		}
 		statement.Exec()
 		log.Println("Foreign Key enabled for sqlite.")
 		log.Println("Created tables")
-		return db.Ping()
+		return a.DB.Ping()
 	} else {
 		log.Println("Database file found.")
 		var err error
-		db, err := sql.Open("sqlite3", database)
+		a.DB, err = sql.Open("sqlite3", database)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer db.Close()
-		return db.Ping()
+		return a.DB.Ping()
 	}
 }
 
@@ -90,7 +88,6 @@ func (a *App) Run(addr string) {
 
 // InitRoutes initializes the backend routes.
 func (a *App) InitRoutes() {
-	a.Router.HandleFunc("/backend/ReadUser", a.ReadUserHandler).Methods("POST")
 	a.Router.HandleFunc("/backend/CreateGame", a.CreateGameHandler).Methods("POST")
 	a.Router.HandleFunc("/backend/JoinGame", a.JoinGameHandler).Methods("POST")
 	a.Router.HandleFunc("/backend/StartGame", a.StartGameHandler).Methods("POST")

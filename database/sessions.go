@@ -27,7 +27,7 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 
 	var session models.Session
 
-	query := "SELECT * FROM Sessions where Id=" + strconv.Itoa(id)
+	query := "SELECT * FROM Sessions where Id='" + strconv.Itoa(id)+"'"
 	rows, err := db.Query(query)
 	if err != nil {
 		return session, err
