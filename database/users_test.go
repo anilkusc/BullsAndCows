@@ -2,12 +2,12 @@
 package database
 
 import (
+	"database/sql"
 	"reflect"
 	"testing"
 
 	//import models package
 	"github.com/anilkusc/BullsAndCows/models"
-	"github.com/anilkusc/BullsAndCows/test"
 
 	//import mocking 3. party library
 	_ "github.com/proullon/ramsql/driver"
@@ -17,6 +17,27 @@ import (
 var u User
 
 func TestCreateUser(t *testing.T) {
+//It is better to mocking again for every function for detailed testing.
+/////////////////////////////////// MOCKING ////////////////////////////////////////////
+	var batches = []string{
+		`CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name TEXT NOT NULL UNIQUE);`,
+	}
+	//open pseudo database for function
+	db, err := sql.Open("ramsql", "TestCreateUser")
+	if err != nil {
+		t.Fatalf("Error creating mock sql : %s\n", err)
+	}
+	defer db.Close()
+
+	// Exec every line of batch and create database
+	for _, b := range batches {
+		_, err = db.Exec(b)
+		if err != nil {
+			t.Fatalf("Error exec query in query: %s\n Error:%s", b, err)
+		}
+	}
+/////////////////////////////////// MOCKING ///////////////////////////////////////////
+
 	tests := []struct {
 		user   models.User
 		result models.User
@@ -24,9 +45,6 @@ func TestCreateUser(t *testing.T) {
 	}{
 		{user: models.User{Name: "myuser"}, result: models.User{Id: 0, Name: "myuser"}, err: nil},
 	}
-	db := test.CreateDatabase(t, "TestCreateUser")
-
-	defer db.Close()
 
 	for _, test := range tests {
 		s, err := u.CreateUser(db, test.user)
@@ -46,6 +64,27 @@ func TestCreateUser(t *testing.T) {
 
 //Test for ReadUser function.
 func TestReadUser(t *testing.T) {
+/////////////////////////////////// MOCKING ////////////////////////////////////////////
+	var batches = []string{
+		`CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name TEXT NOT NULL UNIQUE);`,
+		`INSERT INTO Users (Id,Name) VALUES (1,'anonymous');`,
+	}
+	//open pseudo database for function
+	db, err := sql.Open("ramsql", "TestReadUser")
+	if err != nil {
+		t.Fatalf("Error creating mock sql : %s\n", err)
+	}
+	defer db.Close()
+
+	// Exec every line of batch and create database
+	for _, b := range batches {
+		_, err = db.Exec(b)
+		if err != nil {
+			t.Fatalf("Error exec query in query: %s\n Error:%s", b, err)
+		}
+	}
+/////////////////////////////////// MOCKING ////////////////////////////////////////////
+
 	// Specify test variables and expected results.
 	tests := []struct {
 		id int
@@ -56,12 +95,8 @@ func TestReadUser(t *testing.T) {
 		// When give to first parameter(id) 1 , We expect result :1 error nil
 		{id: 1, result: models.User{Id: 1, Name: "anonymous"}, err: nil},
 		// When give to first parameter(id) 1 , We expect result :1 error nil
-		{id: 2, result: models.User{Id: 2, Name: "test"}, err: nil},
+		//{id: 2, result: models.User{Id: 2, Name: "test"}, err: nil},
 	}
-	// Create Database for this function.It defined in test/test.go file
-	db := test.CreateDatabase(t, "TestReadUser")
-
-	defer db.Close()
 
 	// test all of the variables.
 	for _, test := range tests {
@@ -89,6 +124,26 @@ func TestReadUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
+/////////////////////////////////// MOCKING ////////////////////////////////////////////
+	var batches = []string{
+		`CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name TEXT NOT NULL UNIQUE);`,
+		`INSERT INTO Users (Id,Name) VALUES (1,'anonymous');`,
+	}
+	//open pseudo database for function
+	db, err := sql.Open("ramsql", "TestUpdateUser")
+	if err != nil {
+		t.Fatalf("Error creating mock sql : %s\n", err)
+	}
+	defer db.Close()
+
+	// Exec every line of batch and create database
+	for _, b := range batches {
+		_, err = db.Exec(b)
+		if err != nil {
+			t.Fatalf("Error exec query in query: %s\n Error:%s", b, err)
+		}
+	}
+/////////////////////////////////// MOCKING ////////////////////////////////////////////
 	tests := []struct {
 		user   models.User
 		result models.User
@@ -96,9 +151,7 @@ func TestUpdateUser(t *testing.T) {
 	}{
 		{user: models.User{Id: 1, Name: "John"}, result: models.User{Id: 1, Name: "John"}, err: nil},
 	}
-	db := test.CreateDatabase(t, "TestUpdateUser")
 
-	defer db.Close()
 	for _, test := range tests {
 		s, err := u.UpdateUser(db, test.user)
 		if test.err == nil {
@@ -116,6 +169,26 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
+/////////////////////////////////// MOCKING ////////////////////////////////////////////
+	var batches = []string{
+		`CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name TEXT NOT NULL UNIQUE);`,
+		`INSERT INTO Users (Id,Name) VALUES (1,'anonymous');`,
+	}
+	//open pseudo database for function
+	db, err := sql.Open("ramsql", "TestDeleteUser")
+	if err != nil {
+		t.Fatalf("Error creating mock sql : %s\n", err)
+	}
+	defer db.Close()
+
+	// Exec every line of batch and create database
+	for _, b := range batches {
+		_, err = db.Exec(b)
+		if err != nil {
+			t.Fatalf("Error exec query in query: %s\n Error:%s", b, err)
+		}
+	}
+/////////////////////////////////// MOCKING ////////////////////////////////////////////	
 	tests := []struct {
 		id     int
 		result models.User
@@ -123,9 +196,6 @@ func TestDeleteUser(t *testing.T) {
 	}{
 		{id: 1, result: models.User{Id: 1, Name: "anonymous"}, err: nil},
 	}
-	db := test.CreateDatabase(t, "TestDeleteUser")
-
-	defer db.Close()
 
 	for _, test := range tests {
 		s, err := u.DeleteUser(db, test.id)
@@ -144,15 +214,33 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestListUsers(t *testing.T) {
+/////////////////////////////////// MOCKING ////////////////////////////////////////////
+	var batches = []string{
+		`CREATE TABLE Users (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name TEXT NOT NULL UNIQUE);`,
+		`INSERT INTO Users (Id,Name) VALUES (1,'anonymous');`,
+		`INSERT INTO Users (Id,Name) VALUES (2,'test');`,
+	}
+	//open pseudo database for function
+	db, err := sql.Open("ramsql", "TestListUsers")
+	if err != nil {
+		t.Fatalf("Error creating mock sql : %s\n", err)
+	}
+	defer db.Close()
+
+	// Exec every line of batch and create database
+	for _, b := range batches {
+		_, err = db.Exec(b)
+		if err != nil {
+			t.Fatalf("Error exec query in query: %s\n Error:%s", b, err)
+		}
+	}
+/////////////////////////////////// MOCKING ////////////////////////////////////////////	
 	tests := []struct {
 		result []models.User
 		err    error
 	}{
 		{result: []models.User{{Id: 1, Name: "anonymous"}, {Id: 2, Name: "test"}}, err: nil},
 	}
-	db := test.CreateDatabase(t, "TestListUsers")
-
-	defer db.Close()
 
 	for _, test := range tests {
 		s, err := u.ListUsers(db)

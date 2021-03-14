@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/anilkusc/BullsAndCows/test"
 	_ "github.com/proullon/ramsql/driver"
 )
 
@@ -21,25 +20,50 @@ func TestCreateGameHandler(t *testing.T) {
 		output string
 	}{
 
-		{input: `{"name": "anil"}`, output: `{"id":0,"session":{"id":0,"date":"`+now+`","start":0,"end":0,"winner":0},"clue":{"positive":0,"negative":0},"turn":0,"player1":{"id":0,"name":"anil"},"player2":{"id":0,"name":"anil"},"player1number":0,"player2number":0,"predictor":0,"prediction":0,"action":"Created"}`},
+		{input: `test`, output: "hello"},
 	}
-	a.DB = test.CreateDatabase(t, "TestCreateGameHandler")
 
 	for _, test := range tests {
-
-		req, err := http.NewRequest("POST", "/backend/CreateGame", strings.NewReader(test.input))
+		req, err := http.NewRequest("POST", "/backend/CreateGame",  strings.NewReader(test.input))
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(a.CreateGameHandler)
+		handler := http.HandlerFunc(a.StartGameHandler)
 
 		handler.ServeHTTP(rr, req)
 
 		body, _ := ioutil.ReadAll(rr.Body)
 		if string(body) != test.output {
-			t.Errorf("\nResponse is: %v .\nExpected: %v", string(body), test.output)
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
+		}
+	}
+}
+func TestGetReadyHandler(t *testing.T) {
+
+	tests := []struct {
+		input  string
+		output string
+	}{
+
+		{input: `test`, output: "hello"},
+	}
+
+	for _, test := range tests {
+		req, err := http.NewRequest("POST", "/backend/GetReady",  strings.NewReader(test.input))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(a.StartGameHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		body, _ := ioutil.ReadAll(rr.Body)
+		if string(body) != test.output {
+			t.Errorf("Response is: %v . Expected: %v", string(body), test.output)
 		}
 	}
 }
@@ -51,9 +75,9 @@ func TestJoinGameHandler(t *testing.T) {
 		output string
 	}{
 
-		{input: `{"user": {"name": "anil"},"session": {"id": 1}}`, output: `{"id":2,"session":{"id":1,"date":"`+now+`","start":0,"end":0,"winner":0},"clue":{"positive":0,"negative":0},"turn":2,"player1":{"id":10,"name":"Player1"},"player2":{"id":0,"name":"anil"},"player1number":0,"player2number":0,"predictor":1,"prediction":1111,"action":"Joined"}`},
+		{input: `test`, output: "hello"},
 	}
-	a.DB = test.CreateDatabase(t, "TestJoinGameHandler")
+
 	for _, test := range tests {
 		req, err := http.NewRequest("POST", "/backend/JoinGame",  strings.NewReader(test.input))
 		if err != nil {
@@ -61,7 +85,7 @@ func TestJoinGameHandler(t *testing.T) {
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(a.JoinGameHandler)
+		handler := http.HandlerFunc(a.StartGameHandler)
 
 		handler.ServeHTTP(rr, req)
 
@@ -78,7 +102,7 @@ func TestStartGameHandler(t *testing.T) {
 		output string
 	}{
 
-		{input: `{"id": 1}`, output: "hello"},
+		{input: `test`, output: "hello"},
 	}
 
 	for _, test := range tests {

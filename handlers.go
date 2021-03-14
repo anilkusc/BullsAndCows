@@ -1,14 +1,14 @@
 package main
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"io"
-	"log"
+	//"log"
 	"net/http"
-	"time"
-	"strconv"
+	//"time"
+	//"strconv"
 	"github.com/anilkusc/BullsAndCows/database"
-	"github.com/anilkusc/BullsAndCows/models"
+	//"github.com/anilkusc/BullsAndCows/models"
 )
 
 type User struct {
@@ -28,7 +28,7 @@ var m Move
 // CreateGame method creates new game.
 func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 //TODO: check if game started and smt like that
-	var user models.User
+/*	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		log.Println("Error decoding user")
@@ -43,6 +43,7 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var session models.Session
 	session.Date = time.Now().Format("02-Jan-2006")
+	session.Player1 = user
 	session, err = s.CreateSession(a.DB, session)
 	if err != nil {
 		log.Println("Error creating session")
@@ -52,11 +53,6 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	move := models.Move{
 		Session:       session,
 		Clue:          models.Clue{Positive: 0, Negative: 0},
-		Turn:          0,
-		Player1:       user,
-		Player2:       user,
-		Player1Number: 0,
-		Player2Number: 0,
 		Predictor:     0,
 		Prediction:    0,
 		Action:        "Created",
@@ -75,13 +71,17 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	io.WriteString(w, string(returnValue))
+	return*/
+	returnValue := "hello"
+	io.WriteString(w, string(returnValue))
 	return
+
 }
 
 // JoinGame method add player to a created game.
 func (a *App) JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 //TODO: check if game started and smt like that
-	type JoinGame struct {
+/*	type JoinGame struct {
 		Session models.Session `json:"session"`
 		User models.User `json:"user"`
 	}
@@ -125,42 +125,20 @@ func (a *App) JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	io.WriteString(w, string(returnValue))
+	return*/
+	returnValue := "hello"
+	io.WriteString(w, string(returnValue))
 	return
 }
 
+// GetReadyHandler method is starts the game after both of the players ready
+func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
+	returnValue := "hello"
+	io.WriteString(w, string(returnValue))
+	return
+}
 // StartGame method is starts the game after both of the players ready
 func (a *App) StartGameHandler(w http.ResponseWriter, r *http.Request) {
-	var session models.Session
-	err := json.NewDecoder(r.Body).Decode(&session)
-	if err != nil {
-		log.Println("Error decoding session")
-		io.WriteString(w, `{"error":"Error decoding session"}`)
-		return
-	}	
-	session, err = s.ReadSession(a.DB, session.Id)
-	if err != nil {
-		log.Println("There is no such a session with id: ",strconv.Itoa(session.Id))
-		io.WriteString(w, `{"error":"There is no such a session with id: `+strconv.Itoa(session.Id)+`"}`)
-		return
-	}
-	moves,err := m.ListMoves(a.DB,session.Id)
-	if err != nil {
-		log.Println("Cannot List Moves")
-		io.WriteString(w, `{"error":"Cannot List Moves"}`)
-		return
-	}
-	move := moves[len(moves)-1]
-	move.Action = "Started"
-	move.Session = session
-	move.Turn = 1
-	move.Predictor = 1
-	move.Id++
-	move, err = m.CreateMove(a.DB, move)
-	if err != nil {
-		log.Println("Error creating move")
-		io.WriteString(w, `{"error":"Error creating move"}`)
-		return
-	}
 	returnValue := "hello"
 	io.WriteString(w, string(returnValue))
 	return

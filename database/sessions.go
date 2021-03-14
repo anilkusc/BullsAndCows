@@ -7,18 +7,19 @@ import (
 	models "github.com/anilkusc/BullsAndCows/models"
 	_ "github.com/mattn/go-sqlite3"
 )
-
+//TODO:Make players foreign key for session 
 type Session struct {
 	*models.Session
 }
 
 func (s *Session) CreateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	statement, err := db.Prepare("INSERT INTO Sessions (Date) VALUES(?)")
+
+	statement, err := db.Prepare("INSERT INTO Sessions (Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name) VALUES(?,?,?,?,?,?)")
 	if err != nil {
 		return session, err
 	}
-	statement.Exec(session.Date)
+	statement.Exec(session.Date,session.Turn,session.Player1.Id,session.Player1.Name,session.Player2.Id,session.Player2.Name)
 	statement.Close()
 	return session, nil
 
@@ -35,7 +36,7 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&session.Id, &session.Date, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number, &session.Start, &session.End, &session.Winner)
 		if err != nil {
 			return session, err
 		}
@@ -88,7 +89,7 @@ func (s *Session) ListSessions(db *sql.DB) ([]models.Session, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var session models.Session
-		err := rows.Scan(&session.Id, &session.Date, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number, &session.Start, &session.End, &session.Winner)
 		if err != nil {
 			return sessions, err
 		}

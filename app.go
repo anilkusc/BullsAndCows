@@ -43,8 +43,8 @@ func (a *App) Init(database string) error {
 		}
 		statement.Exec()
 		log.Println("Created Users table")
-
-		query = "CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOY NULL DEFAULT 0);"
+				
+		query = "CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL DEFAULT 0,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER DEFAULT 0,Player2Number INTEGER DEFAULT 0,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);"
 		statement, err = a.DB.Prepare(query)
 		if err != nil {
 			log.Fatal(err)
@@ -52,7 +52,7 @@ func (a *App) Init(database string) error {
 		statement.Exec()
 		log.Println("Created Sessions table")
 
-		query = "CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT -1,Negative INTEGER DEFAULT -1,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Prediction INTEGER,Action TEXT,FOREIGN KEY (SessionId) REFERENCES Sessions (Id) ON DELETE CASCADE);"
+		query = "CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Predictor INTEGER,Prediction INTEGER,Action TEXT);"
 		statement, err = a.DB.Prepare(query)
 		if err != nil {
 			log.Fatal(err)
@@ -91,6 +91,7 @@ func (a *App) InitRoutes() {
 	a.Router.HandleFunc("/backend/CreateGame", a.CreateGameHandler).Methods("POST")
 	a.Router.HandleFunc("/backend/JoinGame", a.JoinGameHandler).Methods("POST")
 	a.Router.HandleFunc("/backend/StartGame", a.StartGameHandler).Methods("POST")
+	a.Router.HandleFunc("/backend/GetReady", a.GetReadyHandler).Methods("POST")
 	a.Router.HandleFunc("/backend/MakePrediction", a.MakePredictionHandler).Methods("POST")
 	a.Router.HandleFunc("/backend/Connect", a.ConnectHandler).Methods("POST")
 }
