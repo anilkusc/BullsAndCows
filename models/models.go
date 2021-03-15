@@ -8,7 +8,7 @@ type Session struct {
 	Player2       User          `json:"player2"`       // Player2 Name
 	Player1Number int           `json:"player1number"` // Player1 Number
 	Player2Number int           `json:"player2number"` // Player2 Number	
-	Start  int    `json:"start"`  // Is Game Started or not.0 is not started.1 is player1 ready.2 is player2 ready.Both ready.
+	Start  int    `json:"start"`  // Is Game Started or not.0 is not started.1 is player1 ready.2 is player2 ready.3 is both ready.
 	End    int    `json:"end"`    // Is Game ended or not.0 or 1.
 	Winner int    `json:"winner"` // It indicates the winner.It can be 0(Not Ended),1,2
 } 
