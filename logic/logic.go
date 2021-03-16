@@ -4,13 +4,12 @@ import (
 	models "github.com/anilkusc/BullsAndCows/models"
 )
 
-type Clue struct {
-	Clue *models.Clue
-}
 
-func CalculateClue(prediction int, actualNumber int) Clue {
-	var clue Clue
-	return clue
+func CalculateClue(prediction int, actualNumber int) (models.Clue,error) {
+	var clue models.Clue
+	clue.Positive = 2
+	clue.Negative = 2
+	return clue,nil
 }
 func CalculateWinner() int {
 	return 0

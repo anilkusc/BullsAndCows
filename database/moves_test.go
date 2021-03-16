@@ -16,7 +16,7 @@ var m Move
 func TestCreateMove(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 var batches = []string{
-	`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Predictor INTEGER,Prediction INTEGER,Action TEXT);`,
+	`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Prediction INTEGER,Action TEXT);`,
 }
 //open pseudo database for function
 db, err := sql.Open("ramsql", "TestCreateMove")
@@ -39,7 +39,7 @@ for _, b := range batches {
 		result models.Move
 		err    error
 	}{
-		{ move: models.Move{Id: 10,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Predictor: 2,Prediction: 2222,Action: "Predicted"}, result: models.Move{Id: 10,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Predictor: 2,Prediction: 2222,Action: "Predicted"}, err: nil},
+		{ move: models.Move{Id: 10,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Prediction: 2222,Action: "Predicted"}, result: models.Move{Id: 10,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Prediction: 2222,Action: "Predicted"}, err: nil},
 	}
 
 	for _, test := range tests {
@@ -60,8 +60,8 @@ for _, b := range batches {
 func TestReadMove(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Predictor INTEGER,Prediction INTEGER,Action TEXT);`,
-		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Predictor,Prediction,Action) VALUES (1,1,3,4,1,1111,"Predicted");`,
+		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Prediction INTEGER,Action TEXT);`,
+		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Prediction,Action) VALUES (1,1,3,4,1111,"Predicted");`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", "TestReadMove")
@@ -85,7 +85,7 @@ func TestReadMove(t *testing.T) {
 		err    error
 	}{
 
-		{id: 1, result: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 3, Negative: 4},Predictor: 1, Prediction: 1111, Action: "Predicted"}, err: nil},
+		{id: 1, result: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 3, Negative: 4}, Prediction: 1111, Action: "Predicted"}, err: nil},
 	}
 
 	for _, test := range tests {
@@ -107,8 +107,8 @@ func TestReadMove(t *testing.T) {
 func TestUpdateMove(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Predictor INTEGER,Prediction INTEGER,Action TEXT);`,
-		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Predictor,Prediction,Action) VALUES (1,1,3,4,1,1111,"Predicted");`,
+		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Prediction INTEGER,Action TEXT);`,
+		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Prediction,Action) VALUES (1,1,3,4,1111,"Predicted");`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", "TestUpdateMove")
@@ -131,7 +131,7 @@ func TestUpdateMove(t *testing.T) {
 		err    error
 	}{
 
-		{move: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 1, Negative: 1},Predictor: 1, Prediction: 2222, Action: "Predicted"},result: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 1, Negative: 1},Predictor: 1, Prediction: 2222, Action: "Predicted"} ,err: nil},
+		{move: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 1, Negative: 1}, Prediction: 2222, Action: "Predicted"},result: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 1, Negative: 1}, Prediction: 2222, Action: "Predicted"} ,err: nil},
 	}
 
 	for _, test := range tests {
@@ -152,8 +152,8 @@ func TestUpdateMove(t *testing.T) {
 func TestDeleteMove(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Predictor INTEGER,Prediction INTEGER,Action TEXT);`,
-		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Predictor,Prediction,Action) VALUES (1,1,3,4,1,1111,"Predicted");`,
+		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Prediction INTEGER,Action TEXT);`,
+		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Prediction,Action) VALUES (1,1,3,4,1111,"Predicted");`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", "TestDeleteMove")
@@ -176,7 +176,7 @@ func TestDeleteMove(t *testing.T) {
 		err    error
 	}{
 
-		{id: 1, result: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 3, Negative: 4},Predictor: 1, Prediction: 1111, Action: "Predicted"}, err: nil},
+		{id: 1, result: models.Move{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 3, Negative: 4},Prediction: 1111, Action: "Predicted"}, err: nil},
 	}
 
 	for _, test := range tests {
@@ -197,9 +197,9 @@ func TestDeleteMove(t *testing.T) {
 func TestListMoves(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Predictor INTEGER,Prediction INTEGER,Action TEXT);`,
-		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Predictor,Prediction,Action) VALUES (1,1,3,4,1,1111,"Predicted");`,
-		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Predictor,Prediction,Action) VALUES (2,1,2,2,2,2222,"Predicted");`,
+		`CREATE TABLE Moves (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,SessionId INTEGER NOT NULL,Positive INTEGER DEFAULT 0,Negative INTEGER DEFAULT 0,Prediction INTEGER,Action TEXT);`,
+		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Prediction,Action) VALUES (1,1,3,4,1111,"Predicted");`,
+		`INSERT INTO Moves (Id,SessionId,Positive,Negative,Prediction,Action) VALUES (2,1,2,2,2222,"Predicted");`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", "TestListMoves")
@@ -222,7 +222,7 @@ func TestListMoves(t *testing.T) {
 		err    error
 	}{
 
-		{id: 1, result: []models.Move{{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 3, Negative: 4},Predictor: 1, Prediction: 1111, Action: "Predicted"},{Id: 2, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 2, Negative: 2},Predictor: 2, Prediction: 2222, Action: "Predicted"}}, err: nil},
+		{id: 1, result: []models.Move{{Id: 1, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 3, Negative: 4}, Prediction: 1111, Action: "Predicted"},{Id: 2, Session: models.Session{Id: 1}, Clue: models.Clue{Positive: 2, Negative: 2}, Prediction: 2222, Action: "Predicted"}}, err: nil},
 	}
 
 	for _, test := range tests {

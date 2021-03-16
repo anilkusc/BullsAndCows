@@ -36,7 +36,7 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number,&session.Predictor, &session.Start, &session.End, &session.Winner)
 		if err != nil {
 			return session, err
 		}
@@ -49,11 +49,11 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 }
 func (s *Session) UpdateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Start=?,End=?,Winner=? where Id=?")
+	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Predictor=?,Start=?,End=?,Winner=? where Id=?")
 	if err != nil {
 		return session, err
 	}
-	statement.Exec(session.Date, session.Start, session.End, session.Winner, session.Id)
+	statement.Exec(session.Date,session.Predictor, session.Start, session.End, session.Winner, session.Id)
 	statement.Close()
 
 	return session, nil
@@ -89,7 +89,7 @@ func (s *Session) ListSessions(db *sql.DB) ([]models.Session, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var session models.Session
-		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number,&session.Predictor, &session.Start, &session.End, &session.Winner)
 		if err != nil {
 			return sessions, err
 		}

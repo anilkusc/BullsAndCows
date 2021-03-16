@@ -18,7 +18,7 @@ var s Session
 func TestCreateSession(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
+		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", "TestCreateSession")
@@ -42,7 +42,7 @@ func TestCreateSession(t *testing.T) {
 		err     error
 	}{
 
-		{session: models.Session{Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Start:0,End:0,Winner:0}, result: models.Session{Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Start:0,End:0,Winner:0}, err: nil},
+		{session: models.Session{Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Predictor:0,Start:0,End:0,Winner:0}, result: models.Session{Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Predictor:0,Start:0,End:0,Winner:0}, err: nil},
 	}
 
 	for _, test := range tests {
@@ -63,8 +63,8 @@ func TestCreateSession(t *testing.T) {
 func TestReadSession(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
-		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,1,0,0);`,
+		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
+		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Predictor,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,0,1,0,0);`,
 
 	}
 	//open pseudo database for function
@@ -88,7 +88,7 @@ func TestReadSession(t *testing.T) {
 		result models.Session
 		err    error
 	}{
-		{id: 1, result: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222, Start: 1, End: 0, Winner: 0}, err: nil},
+		{id: 1, result: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222,Predictor: 0,Start: 1, End: 0, Winner: 0}, err: nil},
 	}
 
 	for _, test := range tests {
@@ -110,8 +110,8 @@ func TestReadSession(t *testing.T) {
 func TestUpdateSession(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
-		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,1,0,0);`,
+		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
+		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Predictor,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,0,1,0,0);`,
 	}
 	//open pseudo database for function
 	db, err := sql.Open("ramsql", "TestUpdateSession")
@@ -134,7 +134,7 @@ func TestUpdateSession(t *testing.T) {
 		result  models.Session
 		err     error
 	}{
-		{session: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "myuser"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222, Start: 1, End: 0, Winner: 0}, result: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "myuser"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222, Start: 1, End: 0, Winner: 0}, err: nil},
+		{session: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "myuser"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222,Predictor: 0, Start: 1, End: 0, Winner: 0}, result: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "myuser"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222,Predictor: 0, Start: 1, End: 0, Winner: 0}, err: nil},
 	}
 
 	for _, test := range tests {
@@ -155,8 +155,8 @@ func TestUpdateSession(t *testing.T) {
 func TestDeleteSession(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
-		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,1,0,0);`,
+		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
+		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Predictor,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,0,1,0,0);`,
 
 	}
 	//open pseudo database for function
@@ -179,7 +179,7 @@ func TestDeleteSession(t *testing.T) {
 		result models.Session
 		err    error
 	}{
-		{id: 1, result: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222, Start: 1, End: 0, Winner: 0}, err: nil},
+		{id: 1, result: models.Session{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222,Predictor: 0,Start: 1, End: 0, Winner: 0}, err: nil},
 	}
 
 	for _, test := range tests {
@@ -200,9 +200,9 @@ func TestDeleteSession(t *testing.T) {
 func TestListSessions(t *testing.T) {
 /////////////////////////////////// MOCKING ////////////////////////////////////////////
 	var batches = []string{
-		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
-		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,1,0,0);`,
-		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Start,End,Winner) VALUES (2,'`+now+`',3,1,'anonymous',2,'test',3333,4444,1,0,0);`,
+		`CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER,Player2Number INTEGER,Predictor INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);`,
+		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Predictor,Start,End,Winner) VALUES (1,'`+now+`',5,1,'anonymous',2,'test',1111,2222,0,1,0,0);`,
+		`INSERT INTO Sessions (Id,Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Player1Number,Player2Number,Predictor,Start,End,Winner) VALUES (2,'`+now+`',3,1,'anonymous',2,'test',3333,4444,0,1,0,0);`,
 
 	}
 	//open pseudo database for function
@@ -224,7 +224,7 @@ func TestListSessions(t *testing.T) {
 		result []models.Session
 		err    error
 	}{
-		{result: []models.Session{{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222, Start: 1, End: 0, Winner: 0},{Id: 2, Date: now,Turn: 3,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 3333,Player2Number: 4444, Start: 1, End: 0, Winner: 0}}, err: nil},
+		{result: []models.Session{{Id: 1, Date: now,Turn: 5,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 1111,Player2Number: 2222,Predictor: 0, Start: 1, End: 0, Winner: 0},{Id: 2, Date: now,Turn: 3,Player1: models.User{Id: 1, Name: "anonymous"},Player2: models.User{Id: 2, Name: "test"},Player1Number: 3333,Player2Number: 4444,Predictor: 0, Start: 1, End: 0, Winner: 0}}, err: nil},
 	}
 
 	for _, test := range tests {
