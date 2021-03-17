@@ -205,7 +205,7 @@ for _, b := range batches {
 		output string
 	}{
 
-		{input: `{"user":1,"session":1,"prediction":1111}`, output: "hello"},
+		{input: `{"user":1,"session":1,"prediction":1111}`, output: `{"id":4,"session":{"id":1,"date":"`+now+`","turn":0,"player1":{"id":1,"name":"anonymous"},"player2":{"id":2,"name":"test"},"player1number":1111,"player2number":2222,"predictor":1,"start":3,"end":0,"winner":0},"clue":{"positive":2,"negative":2},"prediction":1111,"action":"Predicted"}`},
 	}
 
 	for _, test := range tests {

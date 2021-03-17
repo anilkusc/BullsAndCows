@@ -227,7 +227,7 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 // MakePrediction method is in charge for making prediction about opponent player's number.
 func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	type Prediction struct {
-		Number int `json:"number"`
+		Number int `json:"prediction"`
 		User int `json:"user"`
 		Session int `json:"session"`
 	}
@@ -299,13 +299,7 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	session.Turn++
-	session , err = s.UpdateSession(a.DB,session)
-	if err != nil {
-		log.Println("Error updating session")
-		io.WriteString(w, `{"error":"Error updating session"}`)
-		return
-	}	
+
 	moves ,err := m.ListMoves(a.DB,session.Id)
 	if err != nil {
 		log.Println("Cannot list moves")
@@ -315,8 +309,6 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	move := moves[len(moves)-1]
 	move.Session = session
 	move.Clue = clue
-	move.Predictor++
-	move.Predictor = move.Predictor % 3
     move.Prediction = prediction.Number
 	move.Action = action
 
@@ -326,6 +318,21 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"Cannot create move"}`)
 		return
 	}
+
+	session.Turn++
+	if session.Predictor == 1 {
+		session.Predictor = 2
+	}else{
+		session.Predictor = 1
+	}
+	session , err = s.UpdateSession(a.DB,session)
+	if err != nil {
+		log.Println("Error updating session")
+		io.WriteString(w, `{"error":"Error updating session"}`)
+		return
+	}	
+
+
 	returnValue, err := json.Marshal(move)
 	if err != nil {
 		log.Println("Error marshalling move")

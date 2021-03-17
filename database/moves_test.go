@@ -39,7 +39,7 @@ for _, b := range batches {
 		result models.Move
 		err    error
 	}{
-		{ move: models.Move{Id: 10,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Prediction: 2222,Action: "Predicted"}, result: models.Move{Id: 10,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Prediction: 2222,Action: "Predicted"}, err: nil},
+		{ move: models.Move{Id: 10,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Prediction: 2222,Action: "Predicted"}, result: models.Move{Id: 1,Session: models.Session{Id:1},Clue: models.Clue{Positive: 2,Negative:2},Prediction: 2222,Action: "Predicted"}, err: nil},
 	}
 
 	for _, test := range tests {

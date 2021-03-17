@@ -17,8 +17,10 @@ func (m *Move) CreateMove(db *sql.DB, move models.Move) (models.Move, error) {
 	if err != nil {
 		return move, err
 	}
-	statement.Exec(move.Session.Id, move.Clue.Positive, move.Clue.Negative, move.Prediction, move.Action)
+	res , _ := statement.Exec(move.Session.Id, move.Clue.Positive, move.Clue.Negative, move.Prediction, move.Action)
 	statement.Close()
+	id , _ := res.LastInsertId()
+	move.Id = int(id)
 	return move, nil
 
 }

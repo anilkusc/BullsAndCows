@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"strconv"
-
 	models "github.com/anilkusc/BullsAndCows/models"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -19,8 +18,10 @@ func (s *Session) CreateSession(db *sql.DB, session models.Session) (models.Sess
 	if err != nil {
 		return session, err
 	}
-	statement.Exec(session.Date,session.Turn,session.Player1.Id,session.Player1.Name,session.Player2.Id,session.Player2.Name)
+	res, _ := statement.Exec(session.Date,session.Turn,session.Player1.Id,session.Player1.Name,session.Player2.Id,session.Player2.Name)
 	statement.Close()
+	id , _ := res.LastInsertId()
+	session.Id = int(id)
 	return session, nil
 
 }
@@ -53,9 +54,8 @@ func (s *Session) UpdateSession(db *sql.DB, session models.Session) (models.Sess
 	if err != nil {
 		return session, err
 	}
-	statement.Exec(session.Date,session.Predictor, session.Start, session.End, session.Winner, session.Id)
+    statement.Exec(session.Date,session.Predictor, session.Start, session.End, session.Winner, session.Id)
 	statement.Close()
-
 	return session, nil
 
 }
@@ -73,7 +73,6 @@ func (s *Session) DeleteSession(db *sql.DB, id int) (models.Session, error) {
 	}
 	statement.Exec(session.Id)
 	statement.Close()
-
 	return session, nil
 
 }

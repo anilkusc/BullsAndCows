@@ -42,7 +42,7 @@ func TestCreateSession(t *testing.T) {
 		err     error
 	}{
 
-		{session: models.Session{Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Predictor:0,Start:0,End:0,Winner:0}, result: models.Session{Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Predictor:0,Start:0,End:0,Winner:0}, err: nil},
+		{session: models.Session{Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Predictor:0,Start:0,End:0,Winner:0}, result: models.Session{Id:1,Date: now,Turn:0,Player1:models.User{Id:1,Name:"Anonymous1"},Player2:models.User{Id:0,Name:""},Player1Number:0,Player2Number:0,Predictor:0,Start:0,End:0,Winner:0}, err: nil},
 	}
 
 	for _, test := range tests {
