@@ -10,6 +10,7 @@ import (
 	"github.com/anilkusc/BullsAndCows/database"
 	"github.com/anilkusc/BullsAndCows/logic"
 	"github.com/anilkusc/BullsAndCows/models"
+	"github.com/gorilla/websocket"
 )
 
 type User struct {
@@ -345,7 +346,53 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 
 // Connect method will be websocket that notify to user for turn
 func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
-	returnValue := "hello"
-	io.WriteString(w, string(returnValue))
-	return
+
+	var upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+	
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Cannot create Websocket")
+		io.WriteString(w, `{"error":"Cannot create Websocket"}`)
+		return
+	}
+
+	for {
+		messageType, req, _ := ws.ReadMessage()
+		for{
+
+			type Connect struct {
+				User int `json:"user"`
+				Session int `json:"session"`
+			}
+			var connect Connect	
+			if err := json.Unmarshal(req, &connect); err != nil {
+				log.Println("Cannot unmarshall")
+			}
+			
+			moves ,err := m.ListMoves(a.DB,connect.Session)
+			if err != nil {
+				log.Println("Cannot list moves")
+			}
+			
+			move := moves[len(moves)-1]
+			returnValue, err := json.Marshal(move)
+			if err != nil {
+				log.Println("Error marshalling move")
+				io.WriteString(w, `{"error":"Error marshalling move"}`)
+				return
+			}
+
+			data := []byte(returnValue)
+			if err := ws.WriteMessage(messageType, data); err != nil {
+				log.Println("error while sending message:",err)
+				return
+			}
+			time.Sleep(3 * time.Second)
+		}
+	}
 }
