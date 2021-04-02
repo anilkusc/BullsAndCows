@@ -215,6 +215,13 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+			
+	if getReady.User == 1 {
+		move.Session.Player2Number = 0
+	}else{
+		move.Session.Player1Number = 0
+	}
+
 	returnValue, err := json.Marshal(move)
 	if err != nil {
 		log.Println("Error marshalling move")
@@ -331,9 +338,12 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error updating session")
 		io.WriteString(w, `{"error":"Error updating session"}`)
 		return
-	}	
-
-
+	}
+	if prediction.User == 1 {
+		move.Session.Player2Number = 0
+	}else{
+		move.Session.Player1Number = 0
+	}
 	returnValue, err := json.Marshal(move)
 	if err != nil {
 		log.Println("Error marshalling move")
@@ -380,6 +390,10 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			
 			move := moves[len(moves)-1]
+
+			move.Session.Player1Number = 0
+			move.Session.Player2Number = 0
+
 			returnValue, err := json.Marshal(move)
 			if err != nil {
 				log.Println("Error marshalling move")
