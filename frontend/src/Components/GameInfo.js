@@ -1,8 +1,10 @@
 import React from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = theme => ({
     paper: {
@@ -18,6 +20,7 @@ const useStyles = theme => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+
 });
 
 class GameInfo extends React.Component {
@@ -26,11 +29,51 @@ class GameInfo extends React.Component {
         return (
             <div>
                 <Container component="main" maxWidth="xs">
-                    <CssBaseline />
                     <div className={classes.paper}>
-                        <Typography component="h1" variant="h5">
-                            Game Info
-                        </Typography>
+                        <Paper>
+                            &nbsp;&nbsp;&nbsp;
+                            Turn:
+                            &nbsp;&nbsp;&nbsp;
+                            Move:
+                            &nbsp;&nbsp;&nbsp;
+                            Opponent:
+                            &nbsp;&nbsp;&nbsp;
+                            Session:
+                            &nbsp;&nbsp;&nbsp;
+                            <Button>Abandon</Button>
+                            <Container component="main" maxWidth="xs">
+                                <div className={classes.paper}>
+                                    <Typography component="h1" variant="h5">
+                                        Your Prediction
+                                     </Typography>
+                                    <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            color="primary"
+                                            required
+                                            fullWidth
+                                            id="text"
+                                            label="Prediction"
+                                            name="prediction"
+                                            autoComplete="prediction"
+                                            onChange={this.handleChangeUsername}
+                                            autoFocus
+                                        />
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={this.handleSubmit}
+                                            className={classes.submit}
+                                        >
+                                            SEND
+                                        </Button>
+                                    </form>
+                                </div>
+                            </Container>
+                        </Paper>
                     </div>
                 </Container>
             </div>

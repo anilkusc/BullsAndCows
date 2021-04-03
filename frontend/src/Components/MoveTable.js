@@ -10,8 +10,10 @@ class MoveTable extends React.Component {
             rows: [],
             columns: [
                 { field: 'id', headerName: 'ID', width: 70 },
-                { field: 'username', headerName: 'Username', width: 130 },
-                { field: 'role', headerName: 'Role', width: 130 },
+                { field: 'negative', headerName: 'Negative', width: 120 },
+                { field: 'positive', headerName: 'Positive', width: 120 },
+                { field: 'prediction', headerName: 'Prediction', width: 120 },
+                { field: 'predictor', headerName: 'Predictor', width: 120 },
             ]
         }
     }
