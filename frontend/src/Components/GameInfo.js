@@ -24,6 +24,13 @@ const useStyles = theme => ({
 });
 
 class GameInfo extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            start: false,
+        }
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -41,37 +48,51 @@ class GameInfo extends React.Component {
                             Session:
                             &nbsp;&nbsp;&nbsp;
                             <Button>Abandon</Button>
+
                             <Container component="main" maxWidth="xs">
-                                <div className={classes.paper}>
-                                    <Typography component="h1" variant="h5">
-                                        Your Prediction
-                                     </Typography>
-                                    <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
-                                        <TextField
-                                            variant="outlined"
-                                            margin="normal"
-                                            color="primary"
-                                            required
-                                            fullWidth
-                                            id="text"
-                                            label="Prediction"
-                                            name="prediction"
-                                            autoComplete="prediction"
-                                            onChange={this.handleChangeUsername}
-                                            autoFocus
-                                        />
-                                        <Button
-                                            type="submit"
-                                            fullWidth
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={this.handleSubmit}
-                                            className={classes.submit}
-                                        >
-                                            SEND
-                                        </Button>
-                                    </form>
-                                </div>
+                                {this.state.start ? (
+                                    <div className={classes.paper}>
+                                        <Typography component="h1" variant="h5">
+                                            Your Prediction
+                                        </Typography>
+                                        <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
+                                            <TextField
+                                                variant="outlined"
+                                                margin="normal"
+                                                color="primary"
+                                                required
+                                                fullWidth
+                                                id="text"
+                                                label="Prediction"
+                                                name="prediction"
+                                                autoComplete="prediction"
+                                                onChange={this.handleChangeUsername}
+                                                autoFocus
+                                            />
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={this.handleSubmit}
+                                                className={classes.submit}
+                                            >
+                                                SEND
+                                            </Button>
+                                        </form>
+                                    </div>
+                                ) :
+                                    (
+                                        <Typography component="h1" variant="h5">
+                                            <br></br>
+                                            <br></br>
+                                            Waiting For The Opponent...
+                                            <br></br>
+                                            <br></br>
+                                            <br></br>
+                                        </Typography>
+                                    )
+                                }
                             </Container>
                         </Paper>
                     </div>

@@ -31,7 +31,9 @@ class CreateGame extends React.Component {
                     <CssBaseline />
                     <div className={classes.paper}>
                         <Typography component="h1" variant="h5">
-                            Create Game
+                            
+                                Create Game
+
                         </Typography>
                         <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
                             <TextField
@@ -54,7 +56,7 @@ class CreateGame extends React.Component {
                                 onClick={this.handleSubmit}
                                 className={classes.submit}
                             >
-                                 Create Game
+                                Create Game
                             </Button>
                         </form>
                     </div>
