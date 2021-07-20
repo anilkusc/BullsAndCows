@@ -1,0 +1,66 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Bulls&Cows</title>
+
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+  <script src="wasm_exec.js"></script>
+  <script>
+    const go = new Go();
+    let mod, inst;
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(
+      async result => {
+        mod = result.module;
+        inst = result.instance;
+        await go.run(inst);
+      }
+    );
+  </script>
+</head>
+
+<body class="hold-transition login-page">
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-6">
+
+          <div class="card card-primary card-outline">
+            <div class="card-header">
+              <h5 class="m-0">Create Game</h5>
+            </div>
+            <div class="card-body">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Username">
+              </div>
+
+              <a href="game.html" onClick="createGame()" class="btn btn-primary">Create</a>
+            </div>
+          </div>
+        </div>
+        <!-- /.col-md-6 -->
+        <div class="col-lg-6">
+
+          <div class="card card-primary card-outline">
+            <div class="card-header">
+              <h5 class="m-0">Join Game</h5>
+            </div>
+            <div class="card-body">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Session ID">
+              </div>
+              <a href="game.html" onClick="operate()" class="btn btn-primary">Join Game</a>
+
+            </div>
+          </div>
+        </div>
+        <!-- /.col-md-6 -->
+      </div>
+      <!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  Result is: <b><span id="total">0</span></b>
+  <button onClick="operate()" id="submit">Submit</button>
+  <a href="game.html" id="test">Game</button>
+</body>
+</html>

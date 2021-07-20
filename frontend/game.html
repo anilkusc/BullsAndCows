@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bulls&Cows</title>
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+  <script src="wasm_exec.js"></script>
+  <script>
+    const go = new Go();
+    let mod, inst;
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(
+      async result => {
+        mod = result.module;
+        inst = result.instance;
+        await go.run(inst);
+      }
+    );
+  </script>
+</head>
+
+<body >
+  <div class="callout callout-info">
+    <div class="row">
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3>0</h3>
+
+            <p>Turn</p>
+          </div>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3>1</h3>
+            <p>Move</p>
+          </div>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+          <div class="inner">
+            <h3>Test</h3>
+            <p>Opponent Name</p>
+          </div>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-danger">
+          <div class="inner">
+            <h3>11165</h3>
+            <p>Session</p>
+          </div>
+        </div>
+      </div>
+      <!-- ./col -->
+    </div>
+      <!-- /.card-header -->
+      <!-- form start -->
+      <form>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="exampleInputEmail1">...</label>
+            <input type="number" class="form-control" id="exampleInput1" placeholder="Your Prediction">
+          </div>
+        <!-- /.card-body -->
+
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-primary">Abandon</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+  
+  <div class="card">
+  <!-- /.card-header -->
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table m-0">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Negative</th>
+          <th>Positive</th>
+          <th>Prediction</th>
+          <th>Predictor</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>OR9842</td>
+          <td>Call of Duty IV</td>
+          <td>Shipped</td>
+          <td>Test 1</td>
+          <td>Test 2</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- /.table-responsive -->
+  </div>
+  <!-- /.card-footer -->
+</div>
+</body>
+
+</html>
