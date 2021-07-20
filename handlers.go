@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"io"
+	//"io/ioutil"
 	"log"
+	//"fmt"
 	"net/http"
 	"time"
 	"strconv"
@@ -30,6 +32,7 @@ var m Move
 // CreateGame method creates new game.
 func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 //TODO: check if game started and smt like that
+
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
