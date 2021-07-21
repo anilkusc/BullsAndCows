@@ -1,34 +1,56 @@
 package main
 
 import (
-	"strconv"
 	"syscall/js"
+	"log"
+	"net/http"
+	"bytes"
+    "encoding/json"
+	"io/ioutil"	
+)
+var (
+	window = js.Global()
 )
 
-func operate(this js.Value, inputs []js.Value) interface{} {
-	window := js.Global()
-	doc := window.Get("document")
-	body := doc.Get("body")
-	total := doc.Call("getElementById", "total")
-	go Request("https://httpbin.org/post","{'name': 'John Doe', 'occupation': 'gardener'}")
-	total.Set("innerHTML", strconv.Itoa(3))
-	body.Call("appendChild", total)
-	return nil
+func CreateGameRequest(URL string , userName string) {
+
+	type Payload struct {
+		Name string `json:"name"`
+	}
+	
+	payload := Payload{
+		Name: userName,
+	}
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		log.Println(err)
+	}
+	body := bytes.NewReader(payloadBytes)
+	
+	req, err := http.NewRequest("POST", URL, body)
+	if err != nil {
+		log.Println(err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println(err)
+	}
+	a, _ := ioutil.ReadAll(resp.Body)
+	bodyString := string(a)
+	
+	window.Get("localStorage").Set("response",bodyString)
+	window.Set("location","game.html")
+	defer resp.Body.Close()
 }
 
 func CreateGame(this js.Value, inputs []js.Value) interface{} {
-	window := js.Global()
-	doc := window.Get("document")
-	body := doc.Get("body")
-	total := doc.Call("getElementById", "total")
-	go Request("http://localhost:8080/backend/CreateGame","{\"name\": \"anil\"}")
-	total.Set("innerHTML", strconv.Itoa(30))
-	body.Call("appendChild", total)
+	go CreateGameRequest("http://localhost:8080/backend/CreateGame",inputs[0].String())
 	return nil
 }
 
 func registerCallbacks() {
-	js.Global().Set("operate", js.FuncOf(operate))
 	js.Global().Set("CreateGame", js.FuncOf(CreateGame))
 }
 
