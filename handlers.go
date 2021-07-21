@@ -32,11 +32,10 @@ var m Move
 // CreateGame method creates new game.
 func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 //TODO: check if game started and smt like that
-
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		log.Println("Error decoding user")
+		log.Println("Error decoding user",err)
 		io.WriteString(w, `{"error":"Error decoding user"}`)
 		return
 	}

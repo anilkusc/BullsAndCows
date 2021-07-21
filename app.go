@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	//"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -88,9 +88,9 @@ func (a *App) Run(addr string) {
 
 // InitRoutes initializes the backend routes.
 func (a *App) InitRoutes() {
-	a.Router.HandleFunc("/backend/CreateGame", a.CreateGameHandler)
-	a.Router.HandleFunc("/backend/JoinGame", a.JoinGameHandler).Methods("POST")
-	a.Router.HandleFunc("/backend/GetReady", a.GetReadyHandler).Methods("POST")
-	a.Router.HandleFunc("/backend/MakePrediction", a.MakePredictionHandler).Methods("POST")
-	a.Router.HandleFunc("/backend/Connect", a.ConnectHandler).Methods("POST")
+	a.Router.HandleFunc("/backend/CreateGame", Inbound(a.CreateGameHandler))
+	a.Router.HandleFunc("/backend/JoinGame", Inbound(a.JoinGameHandler))
+	a.Router.HandleFunc("/backend/GetReady", Inbound(a.GetReadyHandler))
+	a.Router.HandleFunc("/backend/MakePrediction", Inbound(a.MakePredictionHandler))
+	a.Router.HandleFunc("/backend/Connect", Inbound(a.ConnectHandler))
 }
