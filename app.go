@@ -88,9 +88,9 @@ func (a *App) Run(addr string) {
 
 // InitRoutes initializes the backend routes.
 func (a *App) InitRoutes() {
-	a.Router.HandleFunc("/backend/CreateGame", Inbound(a.CreateGameHandler))
-	a.Router.HandleFunc("/backend/JoinGame", Inbound(a.JoinGameHandler))
-	a.Router.HandleFunc("/backend/GetReady", Inbound(a.GetReadyHandler))
-	a.Router.HandleFunc("/backend/MakePrediction", Inbound(a.MakePredictionHandler))
-	a.Router.HandleFunc("/backend/Connect", Inbound(a.ConnectHandler))
+	a.Router.HandleFunc("/backend/CreateGame", Inbound(a.CreateGameHandler)).Methods("POST")
+	a.Router.HandleFunc("/backend/JoinGame", Inbound(a.JoinGameHandler)).Methods("POST")
+	a.Router.HandleFunc("/backend/GetReady", Inbound(a.GetReadyHandler)).Methods("POST")
+	a.Router.HandleFunc("/backend/MakePrediction", Inbound(a.MakePredictionHandler)).Methods("POST")
+	a.Router.HandleFunc("/backend/Connect", Inbound(a.ConnectHandler)).Methods("POST")
 }

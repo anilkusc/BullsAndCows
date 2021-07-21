@@ -21,7 +21,7 @@
 </head>
 <body >
   <div class="callout callout-info">
-    <div class="row">
+    <div class="row" id="row">
       <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
           <div class="inner">
@@ -58,12 +58,12 @@
       <form>
         <div class="card-body">
           <div class="form-group">
-            <label for="exampleInputEmail1">...</label>
-            <input type="number" class="form-control" id="exampleInput1" placeholder="Your Prediction">
+            <label id="predictiontitle"></label>
+            <input type="number" class="form-control" id="predictionbar" placeholder="Your Prediction" >
           </div>
         <div class="card-footer">
-          <button type="submit" class="btn btn-primary">Submit</button>
-          <button type="submit" class="btn btn-primary">Abandon</button>
+          <button type="submit" id="submitbutton" class="btn btn-primary">Submit</button>
+          <button type="submit" id="abandonbutton" class="btn btn-primary">Abandon</button>
         </div>
       </form>
     </div>
@@ -71,7 +71,7 @@
   <div class="card">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table m-0">
+      <table id="historytable" class="table m-0">
         <thead>
         <tr>
           <th>ID</th>
@@ -81,9 +81,9 @@
           <th>Predictor</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="historytablebody" >
         <tr>
-          <td>OR9842</td>
+          <td>123213</td>
           <td>Call of Duty IV</td>
           <td>Shipped</td>
           <td>Test 1</td>
