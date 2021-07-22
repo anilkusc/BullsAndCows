@@ -18,7 +18,14 @@ func (u *User) CreateUser(db *sql.DB, user models.User) (models.User, error) {
 	if err != nil {
 		return user, err
 	}
-	statement.Exec(user.Name)
+	res, err := statement.Exec(user.Name)
+	if err != nil {
+		return user, err
+	}
+	statement.Exec()
+	id64, _ := res.LastInsertId()
+	id := int(id64)
+	user.Id = id
 	statement.Close()
 	return user, nil
 

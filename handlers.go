@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"io"
-	//"io/ioutil"
+	"io/ioutil"
 	"log"
+
 	//"fmt"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
+
 	"github.com/anilkusc/BullsAndCows/database"
 	"github.com/anilkusc/BullsAndCows/logic"
 	"github.com/anilkusc/BullsAndCows/models"
@@ -31,11 +33,14 @@ var m Move
 
 // CreateGame method creates new game.
 func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
-//TODO: check if game started and smt like that
+	//TODO: check if game started and smt like that
+
+	bodyString, _ := ioutil.ReadAll(r.Body)
 	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+
+	err := json.Unmarshal([]byte(string(bodyString)), &user)
 	if err != nil {
-		log.Println("Error decoding user",err)
+		log.Println("Error decoding user", err)
 		io.WriteString(w, `{"error":"Error decoding user"}`)
 		return
 	}
@@ -55,10 +60,10 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	move := models.Move{
-		Session:       session,
-		Clue:          models.Clue{Positive: 0, Negative: 0},
-		Prediction:    0,
-		Action:        "Created",
+		Session:    session,
+		Clue:       models.Clue{Positive: 0, Negative: 0},
+		Prediction: 0,
+		Action:     "Created",
 	}
 	move, err = m.CreateMove(a.DB, move)
 	if err != nil {
@@ -79,44 +84,53 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 
 // JoinGame method add player to a created game.
 func (a *App) JoinGameHandler(w http.ResponseWriter, r *http.Request) {
-//TODO: check if game started and smt like that
+	//TODO: check if game started and smt like that
 	type JoinGame struct {
 		Session models.Session `json:"session"`
-		User models.User `json:"user"`
+		User    models.User    `json:"user"`
 	}
-	
+	bodyString, _ := ioutil.ReadAll(r.Body)
 	var joinGame JoinGame
-	err := json.NewDecoder(r.Body).Decode(&joinGame)
+
+	err := json.Unmarshal([]byte(string(bodyString)), &joinGame)
 	if err != nil {
-		log.Println("Error decoding joinGame")
+		log.Println("Error decoding joinGame", err)
 		io.WriteString(w, `{"error":"Error decoding joinGame"}`)
 		return
 	}
 
 	session, err := s.ReadSession(a.DB, joinGame.Session.Id)
 	if err != nil {
-		log.Println("There is no such a session with id: ",strconv.Itoa(joinGame.Session.Id))
+		log.Println("There is no such a session with id: ", strconv.Itoa(joinGame.Session.Id))
 		io.WriteString(w, `{"error":"There is no such a session with id: `+strconv.Itoa(joinGame.Session.Id)+`"}`)
 		return
 	}
 
-	user, err := u.CreateUser(a.DB, joinGame.User)
-	if err != nil {
-		log.Println("Error creating user")
-		io.WriteString(w, `{"error":"Error creating user."`)
-		return
-	}
-	session.Player2 = user
-	session, err = s.UpdateSession(a.DB, session)
-	if err != nil {
-		log.Println("Cannot update player 2")
-		io.WriteString(w, `{"error":"Cannot update player 2"`)
-		return
+	if session.Player2.Name == "" {
+		user, err := u.CreateUser(a.DB, joinGame.User)
+		if err != nil {
+			log.Println("Error creating user")
+			io.WriteString(w, `{"error":"Error creating user."`)
+			return
+		}
+		session.Player2 = user
+		session, err = s.UpdateSession(a.DB, session)
+		if err != nil {
+			log.Println("Cannot update player 2")
+			io.WriteString(w, `{"error":"Cannot update player 2"`)
+			return
+		}
+	} else {
+		if session.Player1.Name != joinGame.User.Name && session.Player2.Name != joinGame.User.Name {
+			log.Println("Wrong Username for Joining")
+			io.WriteString(w, `{"error":"Wrong Username for Joining"`)
+			return
+		}
 	}
 
 	move := models.Move{
-		Session    : session,
-		Action     : "Joined",
+		Session: session,
+		Action:  "Joined",
 	}
 	move, err = m.CreateMove(a.DB, move)
 	if err != nil {
@@ -138,32 +152,34 @@ func (a *App) JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 // GetReadyHandler method is starts the game after both of the players ready
 func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 	type GetReady struct {
-		Number int `json:"number"`
-		User int `json:"user"`
+		Number  int `json:"number"`
+		User    int `json:"user"`
 		Session int `json:"session"`
 	}
 
-	var getReady GetReady	
-	err := json.NewDecoder(r.Body).Decode(&getReady)
+	bodyString, _ := ioutil.ReadAll(r.Body)
+	var getReady GetReady
+
+	err := json.Unmarshal([]byte(string(bodyString)), &getReady)
 	if err != nil {
 		log.Println("Error decoding getReady")
 		io.WriteString(w, `{"error":"Error decoding getReady"}`)
 		return
 	}
 
-	if getReady.User >= 3  {
+	if getReady.User >= 3 || getReady.User <= 0 {
 		log.Println("Neither Player 1 Nor Player 2")
 		io.WriteString(w, `{"error":"Neither Player 1 Nor Player 2"}`)
 		return
-	} 	
+	}
 
-	_ , err = u.ReadUser(a.DB,getReady.User)
+	_, err = u.ReadUser(a.DB, getReady.User)
 	if err != nil {
 		log.Println("Error getting user")
 		io.WriteString(w, `{"error":"Error getting user"}`)
 		return
 	}
-	session , err := s.ReadSession(a.DB,getReady.Session)
+	session, err := s.ReadSession(a.DB, getReady.Session)
 	if err != nil {
 		log.Println("Error getting session")
 		io.WriteString(w, `{"error":"Error getting session"}`)
@@ -174,32 +190,32 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("You've already get ready")
 		io.WriteString(w, `{"error":"You've already get ready"}`)
 		return
-	}else{
+	} else {
 		if getReady.User == 1 {
 			session.Player1Number = getReady.Number
 			if session.Start == 2 {
 				session.Start = 3
 				action = "Started"
 				session.Predictor = 1
-			}else{
+			} else {
 				session.Start = 1
 				action = "Ready1"
 			}
-		}else{
+		} else {
 			session.Player2Number = getReady.Number
 			if session.Start == 1 {
 				session.Start = 3
 				action = "Started"
 				session.Predictor = 1
-			}else{
+			} else {
 				session.Start = 2
 				action = "Ready2"
-			}			
+			}
 		}
 
 	}
 
-	session , err = s.UpdateSession(a.DB,session)
+	session, err = s.UpdateSession(a.DB, session)
 	if err != nil {
 		log.Println("Error updating session")
 		io.WriteString(w, `{"error":"Error updating session"}`)
@@ -207,8 +223,8 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	move := models.Move{
-		Session:       session,
-		Action:        action,
+		Session: session,
+		Action:  action,
 	}
 	move, err = m.CreateMove(a.DB, move)
 	if err != nil {
@@ -217,10 +233,9 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-			
 	if getReady.User == 1 {
 		move.Session.Player2Number = 0
-	}else{
+	} else {
 		move.Session.Player1Number = 0
 	}
 
@@ -237,24 +252,24 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 // MakePrediction method is in charge for making prediction about opponent player's number.
 func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	type Prediction struct {
-		Number int `json:"prediction"`
-		User int `json:"user"`
+		Number  int `json:"prediction"`
+		User    int `json:"user"`
 		Session int `json:"session"`
 	}
-	var prediction Prediction	
+	var prediction Prediction
 	err := json.NewDecoder(r.Body).Decode(&prediction)
 	if err != nil {
 		log.Println("Error decoding prediction")
 		io.WriteString(w, `{"error":"Error decoding prediction"}`)
 		return
 	}
-	user , err := u.ReadUser(a.DB,prediction.User)
+	user, err := u.ReadUser(a.DB, prediction.User)
 	if err != nil {
 		log.Println("Error getting user")
 		io.WriteString(w, `{"error":"Error getting user"}`)
 		return
 	}
-	session , err := s.ReadSession(a.DB,prediction.Session)
+	session, err := s.ReadSession(a.DB, prediction.Session)
 	if err != nil {
 		log.Println("Error getting session")
 		io.WriteString(w, `{"error":"Error getting session"}`)
@@ -268,14 +283,14 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("There is no user in this session")
 		io.WriteString(w, `{"error":"There is no user in this session"}`)
 		return
-	}else{
+	} else {
 		if session.Player1 == user {
 			if session.Predictor != 1 {
 				log.Println("It is not your turn!")
 				io.WriteString(w, `{"error":"It is not your turn!"}`)
 				return
 			}
-			clue,err = logic.CalculateClue(prediction.Number,session.Player2Number)
+			clue, err = logic.CalculateClue(prediction.Number, session.Player2Number)
 			if err != nil {
 				log.Println("Error calculating clue")
 				io.WriteString(w, `{"error":"Error calculating clue"}`)
@@ -285,16 +300,16 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 				session.Winner = 1
 				session.End = 1
 				action = "End"
-			}else{
+			} else {
 				action = "Predicted"
 			}
-		}else {
+		} else {
 			if session.Predictor != 2 {
 				log.Println("It is not your turn!")
 				io.WriteString(w, `{"error":"It is not your turn!"}`)
 				return
 			}
-			clue,_ = logic.CalculateClue(prediction.Number,session.Player1Number)
+			clue, _ = logic.CalculateClue(prediction.Number, session.Player1Number)
 			if err != nil {
 				log.Println("Error calculating clue")
 				io.WriteString(w, `{"error":"Error calculating clue"}`)
@@ -304,13 +319,13 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 				session.Winner = 2
 				session.End = 2
 				action = "End"
-			}else{
+			} else {
 				action = "Predicted"
 			}
 		}
 	}
 
-	moves ,err := m.ListMoves(a.DB,session.Id)
+	moves, err := m.ListMoves(a.DB, session.Id)
 	if err != nil {
 		log.Println("Cannot list moves")
 		io.WriteString(w, `{"error":"Cannot list moves"}`)
@@ -319,10 +334,10 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	move := moves[len(moves)-1]
 	move.Session = session
 	move.Clue = clue
-    move.Prediction = prediction.Number
+	move.Prediction = prediction.Number
 	move.Action = action
 
-	move , err = m.CreateMove(a.DB,move)
+	move, err = m.CreateMove(a.DB, move)
 	if err != nil {
 		log.Println("Cannot create move")
 		io.WriteString(w, `{"error":"Cannot create move"}`)
@@ -332,10 +347,10 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	session.Turn++
 	if session.Predictor == 1 {
 		session.Predictor = 2
-	}else{
+	} else {
 		session.Predictor = 1
 	}
-	session , err = s.UpdateSession(a.DB,session)
+	session, err = s.UpdateSession(a.DB, session)
 	if err != nil {
 		log.Println("Error updating session")
 		io.WriteString(w, `{"error":"Error updating session"}`)
@@ -343,7 +358,7 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if prediction.User == 1 {
 		move.Session.Player2Number = 0
-	}else{
+	} else {
 		move.Session.Player1Number = 0
 	}
 	returnValue, err := json.Marshal(move)
@@ -363,7 +378,7 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	
+
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 
 	ws, err := upgrader.Upgrade(w, r, nil)
@@ -375,22 +390,22 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		messageType, req, _ := ws.ReadMessage()
-		for{
+		for {
 
 			type Connect struct {
-				User int `json:"user"`
+				User    int `json:"user"`
 				Session int `json:"session"`
 			}
-			var connect Connect	
+			var connect Connect
 			if err := json.Unmarshal(req, &connect); err != nil {
 				log.Println("Cannot unmarshall")
 			}
-			
-			moves ,err := m.ListMoves(a.DB,connect.Session)
+
+			moves, err := m.ListMoves(a.DB, connect.Session)
 			if err != nil {
 				log.Println("Cannot list moves")
 			}
-			
+
 			move := moves[len(moves)-1]
 
 			move.Session.Player1Number = 0
@@ -405,7 +420,7 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 
 			data := []byte(returnValue)
 			if err := ws.WriteMessage(messageType, data); err != nil {
-				log.Println("error while sending message:",err)
+				log.Println("error while sending message:", err)
 				return
 			}
 			time.Sleep(3 * time.Second)

@@ -45,7 +45,7 @@ func (a *App) Init(database string) error {
 		statement.Exec()
 		log.Println("Created Users table")
 
-		query = "CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL DEFAULT 0,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER DEFAULT 0,Player2Number INTEGER DEFAULT 0,Predictor INTEGER,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);"
+		query = "CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL DEFAULT 0,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER DEFAULT 0,Player2Number INTEGER DEFAULT 0,Predictor INTEGER DEFAULT 0,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);"
 		statement, err = a.DB.Prepare(query)
 		if err != nil {
 			log.Fatal(err)
@@ -90,8 +90,8 @@ func (a *App) Run(addr string) {
 // InitRoutes initializes the backend routes.
 func (a *App) InitRoutes() {
 	a.Router.HandleFunc("/backend/CreateGame", Inbound(a.CreateGameHandler))
-	a.Router.HandleFunc("/backend/JoinGame", Inbound(a.JoinGameHandler)).Methods("POST")
-	a.Router.HandleFunc("/backend/GetReady", Inbound(a.GetReadyHandler)).Methods("POST")
-	a.Router.HandleFunc("/backend/MakePrediction", Inbound(a.MakePredictionHandler)).Methods("POST")
+	a.Router.HandleFunc("/backend/JoinGame", Inbound(a.JoinGameHandler))
+	a.Router.HandleFunc("/backend/GetReady", Inbound(a.GetReadyHandler))
+	a.Router.HandleFunc("/backend/MakePrediction", Inbound(a.MakePredictionHandler))
 	a.Router.HandleFunc("/backend/Connect", a.ConnectHandler)
 }

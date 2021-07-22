@@ -1,9 +1,11 @@
 package main
 
 import (
-	"encoding/json"
+	"log"
+	"net/http"
+
+	"strings"
 	"syscall/js"
-	//"strconv"
 )
 
 var (
@@ -12,32 +14,52 @@ var (
 	body   = doc.Get("body")
 )
 
+func GetReady(this js.Value, inputs []js.Value) interface{} {
+	go func() {
+
+		body := strings.NewReader("{ \"user\": " + window.Get("localStorage").Get("user").String() + " , \"session\": " + window.Get("localStorage").Get("session").String() + "  ,\"number\": " + inputs[0].String() + " }")
+		//body := "{ 'user': { 'name': '" + window.Get("localStorage").Get("username").String() + "' }, 'session': { 'id': " + window.Get("localStorage").Get("session").String() + " }, 'number': " + inputs[0].String() + " }"
+		log.Println(body)
+		req, err := http.NewRequest("POST", "http://localhost:8080/backend/GetReady", body)
+		if err != nil {
+			log.Println(err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Println(err)
+		}
+		defer resp.Body.Close()
+	}()
+	return nil
+}
+
 func GetData() {
-	var response Move
-	json.Unmarshal([]byte(window.Get("localStorage").Get("response").String()), &response)
+	//var response Move
+	//json.Unmarshal([]byte(window.Get("localStorage").Get("response").String()), &response)
 
 	turn := doc.Call("getElementById", "turn")
-	turn.Set("innerHTML", response.Session.Turn)
+	turn.Set("innerHTML", window.Get("localStorage").Get("turn").String())
 	sessionId := doc.Call("getElementById", "session")
-	sessionId.Set("innerHTML", response.Session.Id)
+	sessionId.Set("innerHTML", window.Get("localStorage").Get("session").String())
 	whosturn := doc.Call("getElementById", "whosturn")
-	whosturn.Set("innerHTML", response.Session.Predictor)
-	players := response.Player1.Name + " - " + response.Player2.Name
+	whosturn.Set("innerHTML", window.Get("localStorage").Get("whosturn").String())
 	whosplaying := doc.Call("getElementById", "players")
-	whosplaying.Set("innerHTML", players)
+	whosplaying.Set("innerHTML", window.Get("localStorage").Get("players").String())
 
 	var title string
-	switch response.Session.Start {
-	case 0:
+	switch window.Get("localStorage").Get("start").String() {
+	case "0":
 		title = "Waiting for other player..."
 		break
-	case 1:
+	case "1":
 		title = "Player1 is Ready"
 		break
-	case 2:
+	case "2":
 		title = "Player2 is Ready"
 		break
-	case 3:
+	case "3":
 		title = "Prediction"
 		submitbutton := doc.Call("getElementById", "submitbutton")
 		abandonbutton := doc.Call("getElementById", "abandonbutton")
@@ -54,11 +76,9 @@ func GetData() {
 	}
 	predictiontitle := doc.Call("getElementById", "predictiontitle")
 	predictiontitle.Set("innerHTML", title)
-	var responses []Move
-	responses = append(responses, response)
-	CreateTable(responses)
 }
 
+/*
 func CreateTable(moves []Move) {
 	historytablebody := doc.Call("getElementById", "historytablebody")
 	for _, move := range moves {
@@ -81,45 +101,14 @@ func CreateTable(moves []Move) {
 		tr.Call("appendChild", td_predictor)
 	}
 }
-
-//func registerCallbacks() {
-//	js.Global().Set("Test", js.FuncOf(Test))
-//}
+*/
+func registerCallbacks() {
+	js.Global().Set("GetReady", js.FuncOf(GetReady))
+}
 
 func main() {
 	c := make(chan bool)
 	GetData()
+	registerCallbacks()
 	<-c
-}
-
-type Session struct {
-	Id            int    `json:"id"`
-	Date          string `json:"date"`
-	Turn          int    `json:"turn"`          // Turn Count
-	Player1       User   `json:"player1"`       // Player1 Name
-	Player2       User   `json:"player2"`       // Player2 Name
-	Player1Number int    `json:"player1number"` // Player1 Number
-	Player2Number int    `json:"player2number"` // Player2 Number
-	Predictor     int    `json:"predictor"`     // Who is Predicting
-	Start         int    `json:"start"`         // Is Game Started or not.0 is not started.1 is player1 ready.2 is player2 ready.3 is both ready.
-	End           int    `json:"end"`           // Is Game ended or not.0 or 1.
-	Winner        int    `json:"winner"`        // It indicates the winner.It can be 0(Not Ended),1,2
-}
-
-type User struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
-
-type Clue struct {
-	Positive int `json:"positive"`
-	Negative int `json:"negative"`
-}
-
-type Move struct {
-	Id         int `json:"id"`
-	Session    `json:"session"`
-	Clue       `json:"clue"` // Clues like +1/-1
-	Prediction int           `json:"prediction"` // Prediction
-	Action     string        `json:"action"`     // Action
 }

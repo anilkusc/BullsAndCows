@@ -2,25 +2,27 @@ package database
 
 import (
 	"database/sql"
+	"log"
 	"strconv"
+
 	models "github.com/anilkusc/BullsAndCows/models"
 	_ "github.com/mattn/go-sqlite3"
 )
-//TODO:Make players foreign key for session 
+
+//TODO:Make players foreign key for session
 type Session struct {
 	*models.Session
 }
 
 func (s *Session) CreateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-
 	statement, err := db.Prepare("INSERT INTO Sessions (Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name) VALUES(?,?,?,?,?,?)")
 	if err != nil {
 		return session, err
 	}
-	res, _ := statement.Exec(session.Date,session.Turn,session.Player1.Id,session.Player1.Name,session.Player2.Id,session.Player2.Name)
+	res, _ := statement.Exec(session.Date, session.Turn, session.Player1.Id, session.Player1.Name, session.Player2.Id, session.Player2.Name)
 	statement.Close()
-	id , _ := res.LastInsertId()
+	id, _ := res.LastInsertId()
 	session.Id = int(id)
 	return session, nil
 
@@ -29,7 +31,7 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 
 	var session models.Session
 
-	query := "SELECT * FROM Sessions where Id='" + strconv.Itoa(id)+"'"
+	query := "SELECT * FROM Sessions where Id='" + strconv.Itoa(id) + "'"
 	rows, err := db.Query(query)
 	if err != nil {
 		return session, err
@@ -37,7 +39,8 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number,&session.Predictor, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id, &session.Player1.Name, &session.Player2.Id, &session.Player2.Name, &session.Player1Number, &session.Player2Number, &session.Predictor, &session.Start, &session.End, &session.Winner)
+		log.Println(err)
 		if err != nil {
 			return session, err
 		}
@@ -50,11 +53,11 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 }
 func (s *Session) UpdateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Predictor=?,Start=?,End=?,Winner=? where Id=?")
+	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Predictor=?,Start=?,End=?,Winner=?,Player1Id=?,Player1Name=?,Player1Number=?,Player2Id=?,Player2Name=?,Player2Number=? where Id=?")
 	if err != nil {
 		return session, err
 	}
-    statement.Exec(session.Date,session.Predictor, session.Start, session.End, session.Winner, session.Id)
+	statement.Exec(session.Date, session.Predictor, session.Start, session.End, session.Winner, session.Player1.Id, session.Player1.Name, session.Player1Number, session.Player2.Id, session.Player2.Name, session.Player2Number, session.Id)
 	statement.Close()
 	return session, nil
 
@@ -88,7 +91,7 @@ func (s *Session) ListSessions(db *sql.DB) ([]models.Session, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var session models.Session
-		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id,&session.Player1.Name,&session.Player2.Id,&session.Player2.Name,&session.Player1Number,&session.Player2Number,&session.Predictor, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id, &session.Player1.Name, &session.Player2.Id, &session.Player2.Name, &session.Player1Number, &session.Player2Number, &session.Predictor, &session.Start, &session.End, &session.Winner)
 		if err != nil {
 			return sessions, err
 		}

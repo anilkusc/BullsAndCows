@@ -40,9 +40,10 @@
             </div>
             <div class="card-body">
               <div class="input-group mb-3">
-                <input type="text" class="form-control"  id="session" placeholder="Session ID">
+                <input type="text" class="form-control"  id="joinusername" placeholder="Username">
+                <input type="text" class="form-control"  id="joinsession" placeholder="Session ID">
               </div>
-              <a href="game.html"><button onClick="JoinGame(session.value)" id="join" class="btn btn-primary">Join Game</button></a>
+              <button onClick="JoinGame(joinsession.value,joinusername.value)" id="join" class="btn btn-primary">Join Game</button>
             </div>
           </div>
         </div>
