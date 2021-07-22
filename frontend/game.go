@@ -18,7 +18,6 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 	go func() {
 
 		body := strings.NewReader("{ \"user\": " + window.Get("localStorage").Get("user").String() + " , \"session\": " + window.Get("localStorage").Get("session").String() + "  ,\"number\": " + inputs[0].String() + " }")
-		//body := "{ 'user': { 'name': '" + window.Get("localStorage").Get("username").String() + "' }, 'session': { 'id': " + window.Get("localStorage").Get("session").String() + " }, 'number': " + inputs[0].String() + " }"
 		log.Println(body)
 		req, err := http.NewRequest("POST", "http://localhost:8080/backend/GetReady", body)
 		if err != nil {
@@ -30,6 +29,19 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 		if err != nil {
 			log.Println(err)
 		}
+		//a, _ := ioutil.ReadAll(resp.Body)
+		//bodyString := string(a)
+		submitbutton := doc.Call("getElementById", "submitbutton")
+		abandonbutton := doc.Call("getElementById", "abandonbutton")
+		readybutton := doc.Call("getElementById", "readybutton")
+		predictionbar := doc.Call("getElementById", "predictionbar")
+		numberbar := doc.Call("getElementById", "numberbar")
+		predictionbar.Set("disabled", false)
+		submitbutton.Set("disabled", false)
+		readybutton.Set("disabled", true)
+		abandonbutton.Set("disabled", false)
+		numberbar.Set("disabled", true)
+		//window.Get("localStorage").Set("a", bodyString)
 		defer resp.Body.Close()
 	}()
 	return nil
