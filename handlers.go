@@ -197,7 +197,6 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 				session.Start = 3
 				action = "Started"
 				session.Predictor = 1
-				session.Turn = 1
 			} else {
 				session.Start = 1
 				action = "Ready1"
@@ -208,7 +207,6 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 				session.Start = 3
 				action = "Started"
 				session.Predictor = 1
-				session.Turn = 1
 			} else {
 				session.Start = 2
 				action = "Ready2"
@@ -318,12 +316,7 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"Error decoding prediction"}`)
 		return
 	}
-	user, err := u.ReadUser(a.DB, prediction.User)
-	if err != nil {
-		log.Println("Error getting user")
-		io.WriteString(w, `{"error":"Error getting user"}`)
-		return
-	}
+
 	session, err := s.ReadSession(a.DB, prediction.Session)
 	if err != nil {
 		log.Println("Error getting session")
@@ -334,64 +327,67 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	var clue models.Clue
 	var action string
 
-	if session.Player1 != user && session.Player2 != user {
-		log.Println("There is no user in this session")
-		io.WriteString(w, `{"error":"There is no user in this session"}`)
-		return
-	} else {
-		if session.Player1 == user {
-			if session.Predictor != 1 {
-				log.Println("It is not your turn!")
-				io.WriteString(w, `{"error":"It is not your turn!"}`)
-				return
-			}
-			clue, err = logic.CalculateClue(prediction.Number, session.Player2Number)
-			if err != nil {
-				log.Println("Error calculating clue")
-				io.WriteString(w, `{"error":"Error calculating clue"}`)
-				return
-			}
-			if clue.Negative == 100 && clue.Positive == 100 {
-				session.Winner = 1
-				session.End = 1
-				action = "End"
-			} else {
-				action = "Predicted"
-			}
-		} else {
-			if session.Predictor != 2 {
-				log.Println("It is not your turn!")
-				io.WriteString(w, `{"error":"It is not your turn!"}`)
-				return
-			}
-			clue, _ = logic.CalculateClue(prediction.Number, session.Player1Number)
-			if err != nil {
-				log.Println("Error calculating clue")
-				io.WriteString(w, `{"error":"Error calculating clue"}`)
-				return
-			}
-			if clue.Negative == 100 && clue.Positive == 100 {
-				session.Winner = 2
-				session.End = 2
-				action = "End"
-			} else {
-				action = "Predicted"
-			}
-		}
-	}
-
 	moves, err := m.ListMoves(a.DB, session.Id)
 	if err != nil {
 		log.Println("Cannot list moves")
 		io.WriteString(w, `{"error":"Cannot list moves"}`)
 		return
 	}
+
 	move := moves[len(moves)-1]
+
+	if prediction.User < 1 || prediction.User > 2 {
+		log.Println("There is no user in this session")
+		io.WriteString(w, `{"error":"There is no user in this session"}`)
+		return
+	}
+
+	if prediction.User == 1 {
+		if session.Predictor != 2 && move.Session.Turn != 0 {
+			log.Println("It is not your turn!")
+			io.WriteString(w, `{"error":"It is not your turn!"}`)
+			return
+		}
+		clue, err = logic.CalculateClue(prediction.Number, session.Player2Number)
+		if err != nil {
+			log.Println("Error calculating clue")
+			io.WriteString(w, `{"error":"Error calculating clue"}`)
+			return
+		}
+		if clue.Negative == 100 && clue.Positive == 100 {
+			session.Winner = 1
+			session.End = 1
+			action = "End"
+		} else {
+			action = "Predicted"
+		}
+	} else {
+		if session.Predictor != 1 && move.Session.Turn != 0 {
+			log.Println("It is not your turn!")
+			io.WriteString(w, `{"error":"It is not your turn!"}`)
+			return
+		}
+		clue, _ = logic.CalculateClue(prediction.Number, session.Player1Number)
+		if err != nil {
+			log.Println("Error calculating clue")
+			io.WriteString(w, `{"error":"Error calculating clue"}`)
+			return
+		}
+		if clue.Negative == 100 && clue.Positive == 100 {
+			session.Winner = 2
+			session.End = 2
+			action = "End"
+		} else {
+			action = "Predicted"
+		}
+	}
+	session.Turn++
+	session.Predictor = prediction.User
+
 	move.Session = session
 	move.Clue = clue
 	move.Prediction = prediction.Number
 	move.Action = action
-
 	move, err = m.CreateMove(a.DB, move)
 	if err != nil {
 		log.Println("Cannot create move")
@@ -399,23 +395,16 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Turn++
-	if session.Predictor == 1 {
-		session.Predictor = 2
-	} else {
-		session.Predictor = 1
-	}
 	session, err = s.UpdateSession(a.DB, session)
 	if err != nil {
 		log.Println("Error updating session")
 		io.WriteString(w, `{"error":"Error updating session"}`)
 		return
 	}
-	if prediction.User == 1 {
-		move.Session.Player2Number = 0
-	} else {
-		move.Session.Player1Number = 0
-	}
+
+	move.Session.Player2Number = 0
+	move.Session.Player1Number = 0
+
 	returnValue, err := json.Marshal(move)
 	if err != nil {
 		log.Println("Error marshalling move")
