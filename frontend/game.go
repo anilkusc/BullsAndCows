@@ -148,9 +148,7 @@ func GetData() {
 // TODO: create table with websocket responses
 func CreateTable(moves string) {
 	historytablebody := doc.Call("getElementById", "historytablebody")
-	historytablebody.Call("removeChild", historytablebody)
-	historytablebody = doc.Call("createElement", "tbody")
-	historytablebody = doc.Call("id", "historytablebody")
+	historytablebody.Call("replaceChildren")
 	result := gjson.Get(moves, "@this")
 	for _, name := range result.Array() {
 		tr := doc.Call("createElement", "tr")
