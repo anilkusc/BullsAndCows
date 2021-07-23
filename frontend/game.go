@@ -103,15 +103,9 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 }
 
 func GetData() {
-	//var response Move
-	//json.Unmarshal([]byte(window.Get("localStorage").Get("response").String()), &response)
 
-	turn := doc.Call("getElementById", "turn")
-	turn.Set("innerHTML", window.Get("localStorage").Get("turn").String())
 	sessionId := doc.Call("getElementById", "session")
 	sessionId.Set("innerHTML", window.Get("localStorage").Get("session").String())
-	whosturn := doc.Call("getElementById", "whosturn")
-	whosturn.Set("innerHTML", window.Get("localStorage").Get("whosturn").String())
 	whosplaying := doc.Call("getElementById", "players")
 	whosplaying.Set("innerHTML", window.Get("localStorage").Get("players").String())
 
@@ -145,12 +139,13 @@ func GetData() {
 	predictiontitle.Set("innerHTML", title)
 }
 
-// TODO: create table with websocket responses
+// TODO: if local storage clear request relogin to session
+// TODO: Turn based prediction permission.If player1's turn player2 button must be disabled
 func CreateTable(moves string) {
 	historytablebody := doc.Call("getElementById", "historytablebody")
 	historytablebody.Call("replaceChildren")
 	result := gjson.Get(moves, "@this")
-	for _, name := range result.Array() {
+	for i, name := range result.Array() {
 		tr := doc.Call("createElement", "tr")
 		historytablebody.Call("appendChild", tr)
 		td_id := doc.Call("createElement", "td")
@@ -168,7 +163,40 @@ func CreateTable(moves string) {
 		td_predictor := doc.Call("createElement", "td")
 		td_predictor.Set("innerHTML", gjson.Get(name.String(), "session.predictor").String())
 		tr.Call("appendChild", td_predictor)
-
+		if i == int(gjson.Get(moves, "@this.#").Int())-1 {
+			turn := doc.Call("getElementById", "turn")
+			turn.Set("innerHTML", gjson.Get(name.String(), "session.turn").String())
+			whosturn := doc.Call("getElementById", "whosturn")
+			whosturn.Set("innerHTML", gjson.Get(name.String(), "session.predictor").String())
+			var title string
+			switch gjson.Get(name.String(), "session.start").String() {
+			case "0":
+				title = "Please get ready..."
+				break
+			case "1":
+				title = "Player1 is Ready"
+				break
+			case "2":
+				title = "Player2 is Ready"
+				break
+			case "3":
+				title = "Prediction"
+				submitbutton := doc.Call("getElementById", "submitbutton")
+				abandonbutton := doc.Call("getElementById", "abandonbutton")
+				readybutton := doc.Call("getElementById", "readybutton")
+				predictionbar := doc.Call("getElementById", "predictionbar")
+				predictionbar.Set("disabled", false)
+				submitbutton.Set("disabled", false)
+				readybutton.Set("disabled", true)
+				abandonbutton.Set("disabled", false)
+				break
+			default:
+				title = "Error"
+				break
+			}
+			predictiontitle := doc.Call("getElementById", "predictiontitle")
+			predictiontitle.Set("innerHTML", title)
+		}
 	}
 }
 
