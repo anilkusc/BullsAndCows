@@ -13,13 +13,13 @@ type Move struct {
 }
 
 func (m *Move) CreateMove(db *sql.DB, move models.Move) (models.Move, error) {
-	statement, err := db.Prepare("INSERT INTO Moves (SessionId,Positive,Negative,Prediction,Action) VALUES(?,?,?,?,?)")
+	statement, err := db.Prepare("INSERT INTO Moves (SessionId,Positive,Negative,Prediction,Action,Predictor,Start,End,Winner,Turn) VALUES(?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return move, err
 	}
-	res , _ := statement.Exec(move.Session.Id, move.Clue.Positive, move.Clue.Negative, move.Prediction, move.Action)
+	res, _ := statement.Exec(move.Session.Id, move.Clue.Positive, move.Clue.Negative, move.Prediction, move.Action, move.Session.Predictor, move.Session.Start, move.Session.End, move.Session.Winner, move.Session.Turn)
 	statement.Close()
-	id , _ := res.LastInsertId()
+	id, _ := res.LastInsertId()
 	move.Id = int(id)
 	return move, nil
 
@@ -35,7 +35,7 @@ func (m *Move) ReadMove(db *sql.DB, id int) (models.Move, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&move.Id, &move.Session.Id, &move.Clue.Positive, &move.Clue.Negative , &move.Prediction, &move.Action)
+		err := rows.Scan(&move.Id, &move.Session.Id, &move.Clue.Positive, &move.Clue.Negative, &move.Prediction, &move.Action, &move.Session.Predictor, &move.Session.Start, &move.Session.End, &move.Session.Winner, &move.Session.Turn)
 		if err != nil {
 			return move, err
 		}
@@ -48,11 +48,11 @@ func (m *Move) ReadMove(db *sql.DB, id int) (models.Move, error) {
 }
 func (m *Move) UpdateMove(db *sql.DB, move models.Move) (models.Move, error) {
 
-	statement, err := db.Prepare("UPDATE Moves SET SessionId=?,Positive=?,Negative=?,Prediction=?,Action=?, where Id=?")
+	statement, err := db.Prepare("UPDATE Moves SET SessionId=?,Positive=?,Negative=?,Prediction=?,Action=?,Predictor=?,Start=?,End=?,Winner=?,Turn=? where Id=?")
 	if err != nil {
 		return move, err
 	}
-	statement.Exec(move.Session.Id, move.Clue.Positive, move.Clue.Negative , move.Prediction, move.Action,move.Id)
+	statement.Exec(move.Session.Id, move.Clue.Positive, move.Clue.Negative, move.Prediction, move.Action, move.Session.Predictor, move.Session.Start, move.Session.End, move.Session.Winner, move.Session.Turn, move.Id)
 	statement.Close()
 
 	return move, nil
@@ -85,7 +85,7 @@ func (m *Move) ListMoves(db *sql.DB, sessionId int) ([]models.Move, error) {
 
 	for rows.Next() {
 		var move models.Move
-		err := rows.Scan(&move.Id, &move.Session.Id, &move.Clue.Positive, &move.Clue.Negative, &move.Prediction, &move.Action)
+		err := rows.Scan(&move.Id, &move.Session.Id, &move.Clue.Positive, &move.Clue.Negative, &move.Prediction, &move.Action, &move.Session.Predictor, &move.Session.Start, &move.Session.End, &move.Session.Winner, &move.Session.Turn)
 		if err != nil {
 			return moves, err
 		}

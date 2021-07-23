@@ -166,7 +166,7 @@ func CreateTable(moves string) {
 		td_prediction.Set("innerHTML", gjson.Get(name.String(), "prediction").String())
 		tr.Call("appendChild", td_prediction)
 		td_predictor := doc.Call("createElement", "td")
-		td_predictor.Set("innerHTML", gjson.Get(name.String(), "session.prediction").String())
+		td_predictor.Set("innerHTML", gjson.Get(name.String(), "session.predictor").String())
 		tr.Call("appendChild", td_predictor)
 
 	}
