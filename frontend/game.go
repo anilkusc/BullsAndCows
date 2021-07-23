@@ -6,6 +6,8 @@ import (
 
 	"strings"
 	"syscall/js"
+
+	"github.com/tidwall/gjson"
 )
 
 var (
@@ -13,6 +15,58 @@ var (
 	doc    = window.Get("document")
 	body   = doc.Get("body")
 )
+
+func ConnectWebsocket(URL string, message string) {
+
+	ws := window.Get("WebSocket").New(URL)
+
+	ws.Call("addEventListener", "open", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		println("connected to websocket")
+		ws.Call("send", message)
+		return nil
+	}))
+
+	ws.Call("addEventListener", "close", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		/*code := args[0].Get("code").Int()
+		println(fmt.Sprintf("websocket close %d\n", code))
+		if code == 1000 {
+			println("websocket bye!")
+		} else {
+			go func() {
+				select {
+				case <-time.After(time.Second * 10):
+					connectWebsocket()
+				}
+			}()
+		}*/
+		log.Println("Websocket connection is closed")
+		return nil
+	}))
+	ws.Call("addEventListener", "message", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+
+		//p := doc.Call("getElementById", "p")
+		//p.Set("innerHTML", args[0].Get("data"))
+		CreateTable(args[0].Get("data").String())
+		return nil
+	}))
+
+	ws.Call("addEventListener", "error", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		/*code := args[0].Get("code").String()
+		println(fmt.Sprintf("websocket error %s\n", code))
+		if "ECONNREFUSED" == code {
+			go func() {
+				select {
+				case <-time.After(time.Second * 10):
+					connectWebsocket()
+				}
+			}()
+		} else {
+			println("websocket bye!")
+		}*/
+		log.Println("websocket message error")
+		return nil
+	}))
+}
 
 func GetReady(this js.Value, inputs []js.Value) interface{} {
 	go func() {
@@ -41,6 +95,7 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 		readybutton.Set("disabled", true)
 		abandonbutton.Set("disabled", false)
 		numberbar.Set("disabled", true)
+		go ConnectWebsocket("ws://localhost:8080/backend/Connect", "{\"user\": "+window.Get("localStorage").Get("user").String()+", \"session\": "+window.Get("localStorage").Get("session").String()+"}")
 		//window.Get("localStorage").Set("a", bodyString)
 		defer resp.Body.Close()
 	}()
@@ -90,30 +145,35 @@ func GetData() {
 	predictiontitle.Set("innerHTML", title)
 }
 
-/*
-func CreateTable(moves []Move) {
+// TODO: create table with websocket responses
+func CreateTable(moves string) {
 	historytablebody := doc.Call("getElementById", "historytablebody")
-	for _, move := range moves {
+	historytablebody.Call("removeChild", historytablebody)
+	historytablebody = doc.Call("createElement", "tbody")
+	historytablebody = doc.Call("id", "historytablebody")
+	result := gjson.Get(moves, "@this")
+	for _, name := range result.Array() {
 		tr := doc.Call("createElement", "tr")
 		historytablebody.Call("appendChild", tr)
 		td_id := doc.Call("createElement", "td")
-		td_id.Set("innerHTML", move.Id)
+		td_id.Set("innerHTML", gjson.Get(name.String(), "id").String())
 		tr.Call("appendChild", td_id)
 		td_negative := doc.Call("createElement", "td")
-		td_negative.Set("innerHTML", move.Clue.Negative)
+		td_negative.Set("innerHTML", gjson.Get(name.String(), "clue.negative").String())
 		tr.Call("appendChild", td_negative)
 		td_positive := doc.Call("createElement", "td")
-		td_positive.Set("innerHTML", move.Clue.Positive)
+		td_positive.Set("innerHTML", gjson.Get(name.String(), "clue.positive").String())
 		tr.Call("appendChild", td_positive)
 		td_prediction := doc.Call("createElement", "td")
-		td_prediction.Set("innerHTML", move.Prediction)
+		td_prediction.Set("innerHTML", gjson.Get(name.String(), "prediction").String())
 		tr.Call("appendChild", td_prediction)
 		td_predictor := doc.Call("createElement", "td")
-		td_predictor.Set("innerHTML", move.Session.Predictor)
+		td_predictor.Set("innerHTML", gjson.Get(name.String(), "session.prediction").String())
 		tr.Call("appendChild", td_predictor)
+
 	}
 }
-*/
+
 func registerCallbacks() {
 	js.Global().Set("GetReady", js.FuncOf(GetReady))
 }

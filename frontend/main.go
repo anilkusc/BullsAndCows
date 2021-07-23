@@ -17,7 +17,7 @@ var (
 	window = js.Global()
 )
 
-func CreateGameRequest(URL string, userName string) {
+func CreateGameRequest(URI string, userName string) {
 
 	type Payload struct {
 		Name string `json:"name"`
@@ -31,8 +31,7 @@ func CreateGameRequest(URL string, userName string) {
 		log.Println(err)
 	}
 	body := bytes.NewReader(payloadBytes)
-
-	req, err := http.NewRequest("POST", URL, body)
+	req, err := http.NewRequest("POST", "http://"+window.Get("location").Get("hostname").String()+":8080"+URI, body)
 	if err != nil {
 		log.Println(err)
 	}
@@ -58,7 +57,7 @@ func CreateGameRequest(URL string, userName string) {
 	defer resp.Body.Close()
 }
 
-func JoinGameRequest(URL string, sessionId string, userName string) {
+func JoinGameRequest(URI string, sessionId string, userName string) {
 
 	type User struct {
 		Name string `json:"name"`
@@ -84,7 +83,7 @@ func JoinGameRequest(URL string, sessionId string, userName string) {
 	}
 	body := bytes.NewReader(payloadBytes)
 
-	req, err := http.NewRequest("POST", URL, body)
+	req, err := http.NewRequest("POST", "http://"+window.Get("location").Get("hostname").String()+":8080"+URI, body)
 	if err != nil {
 		log.Println(err)
 	}
@@ -111,12 +110,12 @@ func JoinGameRequest(URL string, sessionId string, userName string) {
 }
 
 func CreateGame(this js.Value, inputs []js.Value) interface{} {
-	go CreateGameRequest("http://localhost:8080/backend/CreateGame", inputs[0].String())
+	go CreateGameRequest("/backend/CreateGame", inputs[0].String())
 	return nil
 }
 
 func JoinGame(this js.Value, inputs []js.Value) interface{} {
-	go JoinGameRequest("http://localhost:8080/backend/JoinGame", inputs[0].String(), inputs[1].String())
+	go JoinGameRequest("/backend/JoinGame", inputs[0].String(), inputs[1].String())
 	return nil
 }
 
