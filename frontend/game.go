@@ -16,6 +16,32 @@ var (
 	body   = doc.Get("body")
 )
 
+func MakePrediction(this js.Value, inputs []js.Value) interface{} {
+	go func() {
+		if inputs[0].String() == "" {
+			return
+		}
+		body := strings.NewReader("{ \"user\": " + window.Get("localStorage").Get("user").String() + " , \"session\": " + window.Get("localStorage").Get("session").String() + "  ,\"prediction\": " + inputs[0].String() + " }")
+		req, err := http.NewRequest("POST", "http://"+window.Get("location").Get("hostname").String()+":8080/backend/MakePrediction", body)
+		if err != nil {
+			log.Println(err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Println(err)
+		}
+		//a, _ := ioutil.ReadAll(resp.Body)
+		//bodyString := string(a)
+		submitbutton := doc.Call("getElementById", "submitbutton")
+		numberbar := doc.Call("getElementById", "numberbar")
+		submitbutton.Set("disabled", true)
+		numberbar.Set("disabled", true)
+		defer resp.Body.Close()
+	}()
+	return nil
+}
 func ConnectWebsocket(URL string, message string) {
 
 	ws := window.Get("WebSocket").New(URL)
@@ -70,9 +96,10 @@ func ConnectWebsocket(URL string, message string) {
 
 func GetReady(this js.Value, inputs []js.Value) interface{} {
 	go func() {
-
+		if inputs[0].String() == "" {
+			return
+		}
 		body := strings.NewReader("{ \"user\": " + window.Get("localStorage").Get("user").String() + " , \"session\": " + window.Get("localStorage").Get("session").String() + "  ,\"number\": " + inputs[0].String() + " }")
-		log.Println(body)
 		req, err := http.NewRequest("POST", "http://localhost:8080/backend/GetReady", body)
 		if err != nil {
 			log.Println(err)
@@ -86,17 +113,12 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 		//a, _ := ioutil.ReadAll(resp.Body)
 		//bodyString := string(a)
 		submitbutton := doc.Call("getElementById", "submitbutton")
-		abandonbutton := doc.Call("getElementById", "abandonbutton")
 		readybutton := doc.Call("getElementById", "readybutton")
-		predictionbar := doc.Call("getElementById", "predictionbar")
 		numberbar := doc.Call("getElementById", "numberbar")
-		predictionbar.Set("disabled", false)
 		submitbutton.Set("disabled", false)
 		readybutton.Set("disabled", true)
-		abandonbutton.Set("disabled", false)
 		numberbar.Set("disabled", true)
 		go ConnectWebsocket("ws://localhost:8080/backend/Connect", "{\"user\": "+window.Get("localStorage").Get("user").String()+", \"session\": "+window.Get("localStorage").Get("session").String()+"}")
-		//window.Get("localStorage").Set("a", bodyString)
 		defer resp.Body.Close()
 	}()
 	return nil
@@ -109,61 +131,19 @@ func GetData() {
 	whosplaying := doc.Call("getElementById", "players")
 	whosplaying.Set("innerHTML", window.Get("localStorage").Get("players").String())
 
-	var title string
-	switch window.Get("localStorage").Get("start").String() {
-	case "0":
-		title = "Waiting for other player..."
-		break
-	case "1":
-		title = "Player1 is Ready"
-		break
-	case "2":
-		title = "Player2 is Ready"
-		break
-	case "3":
-		title = "Prediction"
-		submitbutton := doc.Call("getElementById", "submitbutton")
-		abandonbutton := doc.Call("getElementById", "abandonbutton")
-		readybutton := doc.Call("getElementById", "readybutton")
-		predictionbar := doc.Call("getElementById", "predictionbar")
-		predictionbar.Set("disabled", false)
-		submitbutton.Set("disabled", false)
-		readybutton.Set("disabled", true)
-		abandonbutton.Set("disabled", false)
-		break
-	default:
-		title = "Error"
-		break
-	}
-	predictiontitle := doc.Call("getElementById", "predictiontitle")
-	predictiontitle.Set("innerHTML", title)
 }
 
 // TODO: if local storage clear request relogin to session
-// TODO: Turn based prediction permission.If player1's turn player2 button must be disabled
 func CreateTable(moves string) {
+
 	historytablebody := doc.Call("getElementById", "historytablebody")
 	historytablebody.Call("replaceChildren")
 	result := gjson.Get(moves, "@this")
+
+	//return nil
 	for i, name := range result.Array() {
-		tr := doc.Call("createElement", "tr")
-		historytablebody.Call("appendChild", tr)
-		td_id := doc.Call("createElement", "td")
-		td_id.Set("innerHTML", gjson.Get(name.String(), "id").String())
-		tr.Call("appendChild", td_id)
-		td_negative := doc.Call("createElement", "td")
-		td_negative.Set("innerHTML", gjson.Get(name.String(), "clue.negative").String())
-		tr.Call("appendChild", td_negative)
-		td_positive := doc.Call("createElement", "td")
-		td_positive.Set("innerHTML", gjson.Get(name.String(), "clue.positive").String())
-		tr.Call("appendChild", td_positive)
-		td_prediction := doc.Call("createElement", "td")
-		td_prediction.Set("innerHTML", gjson.Get(name.String(), "prediction").String())
-		tr.Call("appendChild", td_prediction)
-		td_predictor := doc.Call("createElement", "td")
-		td_predictor.Set("innerHTML", gjson.Get(name.String(), "session.predictor").String())
-		tr.Call("appendChild", td_predictor)
 		if i == int(gjson.Get(moves, "@this.#").Int())-1 {
+
 			turn := doc.Call("getElementById", "turn")
 			turn.Set("innerHTML", gjson.Get(name.String(), "session.turn").String())
 			whosturn := doc.Call("getElementById", "whosturn")
@@ -181,14 +161,6 @@ func CreateTable(moves string) {
 				break
 			case "3":
 				title = "Prediction"
-				submitbutton := doc.Call("getElementById", "submitbutton")
-				abandonbutton := doc.Call("getElementById", "abandonbutton")
-				readybutton := doc.Call("getElementById", "readybutton")
-				predictionbar := doc.Call("getElementById", "predictionbar")
-				predictionbar.Set("disabled", false)
-				submitbutton.Set("disabled", false)
-				readybutton.Set("disabled", true)
-				abandonbutton.Set("disabled", false)
 				break
 			default:
 				title = "Error"
@@ -196,12 +168,61 @@ func CreateTable(moves string) {
 			}
 			predictiontitle := doc.Call("getElementById", "predictiontitle")
 			predictiontitle.Set("innerHTML", title)
+			submitbutton := doc.Call("getElementById", "submitbutton")
+			predictionbar := doc.Call("getElementById", "predictionbar")
+			numberbar := doc.Call("getElementById", "numberbar")
+			if gjson.Get(name.String(), "action").String() == "Started" {
+				if window.Get("localStorage").Get("user").String() == "2" {
+					predictionbar.Set("disabled", true)
+					submitbutton.Set("disabled", true)
+					numberbar.Set("disabled", true)
+				} else {
+					predictionbar.Set("disabled", false)
+					submitbutton.Set("disabled", false)
+					numberbar.Set("disabled", false)
+				}
+				continue
+			} else {
+				if gjson.Get(name.String(), "session.predictor").String() == window.Get("localStorage").Get("user").String() {
+					predictionbar.Set("disabled", true)
+					submitbutton.Set("disabled", true)
+					numberbar.Set("disabled", true)
+				} else {
+					predictionbar.Set("disabled", false)
+					submitbutton.Set("disabled", false)
+					numberbar.Set("disabled", false)
+				}
+
+			}
+
 		}
+		if gjson.Get(name.String(), "action").String() != "Predicted" {
+			continue
+		}
+		tr := doc.Call("createElement", "tr")
+		historytablebody.Call("appendChild", tr)
+		td_id := doc.Call("createElement", "td")
+		td_id.Set("innerHTML", gjson.Get(name.String(), "id").String())
+		tr.Call("appendChild", td_id)
+		td_negative := doc.Call("createElement", "td")
+		td_negative.Set("innerHTML", gjson.Get(name.String(), "clue.negative").String())
+		tr.Call("appendChild", td_negative)
+		td_positive := doc.Call("createElement", "td")
+		td_positive.Set("innerHTML", gjson.Get(name.String(), "clue.positive").String())
+		tr.Call("appendChild", td_positive)
+		td_prediction := doc.Call("createElement", "td")
+		td_prediction.Set("innerHTML", gjson.Get(name.String(), "prediction").String())
+		tr.Call("appendChild", td_prediction)
+		td_predictor := doc.Call("createElement", "td")
+		td_predictor.Set("innerHTML", gjson.Get(name.String(), "session.predictor").String())
+		tr.Call("appendChild", td_predictor)
+
 	}
 }
 
 func registerCallbacks() {
 	js.Global().Set("GetReady", js.FuncOf(GetReady))
+	js.Global().Set("MakePrediction", js.FuncOf(MakePrediction))
 }
 
 func main() {

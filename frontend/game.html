@@ -65,8 +65,8 @@
             <input type="number" class="form-control" id="numberbar" placeholder="Your Number">
           </div>
         <div class="card-footer">
-          <button type="submit" id="submitbutton" class="btn btn-primary" disabled>Submit</button>
-          <button type="submit" id="abandonbutton" class="btn btn-primary" disabled>Abandon</button>
+          <button type="submit" id="submitbutton" onClick="MakePrediction(predictionbar.value)" class="btn btn-primary" disabled>Submit</button>
+          <button type="submit" id="abandonbutton" class="btn btn-primary" >Abandon</button>
           <button type="submit" id="readybutton" onClick="GetReady(numberbar.value)" class="btn btn-primary" >Ready</button>
         </div>
     </div>
