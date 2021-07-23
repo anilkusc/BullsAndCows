@@ -197,6 +197,7 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 				session.Start = 3
 				action = "Started"
 				session.Predictor = 1
+				session.Turn = 1
 			} else {
 				session.Start = 1
 				action = "Ready1"
@@ -207,6 +208,7 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 				session.Start = 3
 				action = "Started"
 				session.Predictor = 1
+				session.Turn = 1
 			} else {
 				session.Start = 2
 				action = "Ready2"
