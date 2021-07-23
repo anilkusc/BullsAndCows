@@ -1,5 +1,10 @@
 package main
 
+//TODO: player names must be showd on player1's screen after player2 joins
+//TODO: disabling and enabling html component fixes
+//TODO: add clue logic
+//TODO: add winner logic
+
 import (
 	"log"
 	"net/http"
