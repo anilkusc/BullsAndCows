@@ -1,5 +1,6 @@
 package main
 
+//TODO:prediction control (is it have 4 digits and are the digits same ?)
 import (
 	"encoding/json"
 	"io"
@@ -287,13 +288,13 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println("Cannot list moves")
 			}
-
 			moves[len(moves)-1].Session.Player1.Name = session.Player1.Name
 			moves[len(moves)-1].Session.Player2.Name = session.Player2.Name
 			moves[len(moves)-1].Turn++
 			if moves[len(moves)-1].Action == "Started" {
 				moves[len(moves)-1].Predictor = 2
 			}
+
 			returnValue, err := json.Marshal(moves)
 			if err != nil {
 				log.Println("Error marshalling move")
@@ -306,6 +307,9 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 				log.Println("error while sending message:", err)
 				return
 			}
+			//if moves[len(moves)-1].Action == "End" {
+			//	return
+			//}
 			time.Sleep(1 * time.Second)
 		}
 	}
@@ -363,7 +367,7 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, `{"error":"Error calculating clue"}`)
 			return
 		}
-		if clue.Negative == 100 && clue.Positive == 100 {
+		if clue.Positive == 4 {
 			session.Winner = 1
 			session.End = 1
 			action = "End"
@@ -382,9 +386,9 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, `{"error":"Error calculating clue"}`)
 			return
 		}
-		if clue.Negative == 100 && clue.Positive == 100 {
+		if clue.Positive == 4 {
 			session.Winner = 2
-			session.End = 2
+			session.End = 1
 			action = "End"
 		} else {
 			action = "Predicted"
@@ -411,7 +415,7 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"Error updating session"}`)
 		return
 	}
-
+	//TODO: is it really needed return a response ? Because all information send by websocket
 	move.Session.Player2Number = 0
 	move.Session.Player1Number = 0
 

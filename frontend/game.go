@@ -73,10 +73,25 @@ func ConnectWebsocket(URL string, message string) {
 		log.Println("Websocket connection is closed")
 		return nil
 	}))
+
 	ws.Call("addEventListener", "message", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 
 		//p := doc.Call("getElementById", "p")
 		//p.Set("innerHTML", args[0].Get("data"))
+
+		// TODO : Get loops to outside of create table function
+		reponse := gjson.Get(args[0].Get("data").String(), "@this")
+		moves := reponse.Array()
+		move := moves[len(moves)-1].String()
+		if gjson.Get(move, "action").String() == "End" {
+			predictiontitle := doc.Call("getElementById", "predictiontitle")
+			title := "WINNER IS " + gjson.Get(move, "session.winner").String()
+			predictiontitle.Set("innerHTML", title)
+			log.Println(move)
+			log.Println(title)
+			ws.Call("close")
+		}
+
 		CreateTable(args[0].Get("data").String())
 		return nil
 	}))
@@ -139,7 +154,6 @@ func GetData() {
 
 // TODO: if local storage clear request relogin to session
 func CreateTable(moves string) {
-
 	historytablebody := doc.Call("getElementById", "historytablebody")
 	historytablebody.Call("replaceChildren")
 	result := gjson.Get(moves, "@this")

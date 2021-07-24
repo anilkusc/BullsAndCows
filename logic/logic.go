@@ -33,6 +33,3 @@ func CalculateClue(prediction int, actualNumber int) (models.Clue, error) {
 	}
 	return clue, nil
 }
-func CalculateWinner() int {
-	return 0
-}
