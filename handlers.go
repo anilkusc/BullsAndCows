@@ -376,7 +376,7 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, `{"error":"It is not your turn!"}`)
 			return
 		}
-		clue, _ = logic.CalculateClue(prediction.Number, session.Player1Number)
+		clue, err = logic.CalculateClue(prediction.Number, session.Player1Number)
 		if err != nil {
 			log.Println("Error calculating clue")
 			io.WriteString(w, `{"error":"Error calculating clue"}`)
