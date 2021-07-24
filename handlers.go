@@ -238,7 +238,7 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		move.Session.Player1Number = 0
 	}
-
+	//move.Session.Predictor = 1
 	returnValue, err := json.Marshal(move)
 	if err != nil {
 		log.Println("Error marshalling move")
@@ -274,17 +274,26 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 			if err := json.Unmarshal(req, &connect); err != nil {
 				log.Println("Cannot unmarshall")
 			}
+			session, err := s.ReadSession(a.DB, connect.Session)
+			if err != nil {
+				log.Println("Error getting session")
+				io.WriteString(w, `{"error":"Error getting session"}`)
+				return
+			}
+			session.Player1Number = 0
+			session.Player2Number = 0
 
 			moves, err := m.ListMoves(a.DB, connect.Session)
 			if err != nil {
 				log.Println("Cannot list moves")
 			}
-			for _, move := range moves {
-				move.Session.Player1Number = 0
-				move.Session.Player2Number = 0
-			}
-			//move := moves[len(moves)-1]
 
+			moves[len(moves)-1].Session.Player1.Name = session.Player1.Name
+			moves[len(moves)-1].Session.Player2.Name = session.Player2.Name
+			moves[len(moves)-1].Turn++
+			if moves[len(moves)-1].Action == "Started" {
+				moves[len(moves)-1].Predictor = 2
+			}
 			returnValue, err := json.Marshal(moves)
 			if err != nil {
 				log.Println("Error marshalling move")
@@ -297,7 +306,7 @@ func (a *App) ConnectHandler(w http.ResponseWriter, r *http.Request) {
 				log.Println("error while sending message:", err)
 				return
 			}
-			time.Sleep(5 * time.Second)
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
@@ -381,9 +390,10 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 			action = "Predicted"
 		}
 	}
-	session.Turn++
+	session.Turn = session.Turn + 1
 	session.Predictor = prediction.User
-
+	move.Session.Player1.Name = session.Player1.Name
+	move.Session.Player2.Name = session.Player2.Name
 	move.Session = session
 	move.Clue = clue
 	move.Prediction = prediction.Number

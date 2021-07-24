@@ -105,7 +105,7 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 			return
 		}
 		body := strings.NewReader("{ \"user\": " + window.Get("localStorage").Get("user").String() + " , \"session\": " + window.Get("localStorage").Get("session").String() + "  ,\"number\": " + inputs[0].String() + " }")
-		req, err := http.NewRequest("POST", "http://localhost:8080/backend/GetReady", body)
+		req, err := http.NewRequest("POST", "http://"+window.Get("location").Get("hostname").String()+":8080/backend/GetReady", body)
 		if err != nil {
 			log.Println(err)
 		}
@@ -123,7 +123,6 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 		submitbutton.Set("disabled", false)
 		readybutton.Set("disabled", true)
 		numberbar.Set("disabled", true)
-		go ConnectWebsocket("ws://localhost:8080/backend/Connect", "{\"user\": "+window.Get("localStorage").Get("user").String()+", \"session\": "+window.Get("localStorage").Get("session").String()+"}")
 		defer resp.Body.Close()
 	}()
 	return nil
@@ -144,15 +143,18 @@ func CreateTable(moves string) {
 	historytablebody := doc.Call("getElementById", "historytablebody")
 	historytablebody.Call("replaceChildren")
 	result := gjson.Get(moves, "@this")
-
-	//return nil
 	for i, name := range result.Array() {
 		if i == int(gjson.Get(moves, "@this.#").Int())-1 {
-
+			whosplaying := doc.Call("getElementById", "players")
+			whosplaying.Set("innerHTML", gjson.Get(name.String(), "session.player1.name").String()+" - "+gjson.Get(name.String(), "session.player2.name").String())
 			turn := doc.Call("getElementById", "turn")
 			turn.Set("innerHTML", gjson.Get(name.String(), "session.turn").String())
 			whosturn := doc.Call("getElementById", "whosturn")
-			whosturn.Set("innerHTML", gjson.Get(name.String(), "session.predictor").String())
+			if gjson.Get(name.String(), "session.predictor").String() == "1" {
+				whosturn.Set("innerHTML", "2")
+			} else {
+				whosturn.Set("innerHTML", "1")
+			}
 			var title string
 			switch gjson.Get(name.String(), "session.start").String() {
 			case "0":
@@ -176,18 +178,23 @@ func CreateTable(moves string) {
 			submitbutton := doc.Call("getElementById", "submitbutton")
 			predictionbar := doc.Call("getElementById", "predictionbar")
 			numberbar := doc.Call("getElementById", "numberbar")
+			if gjson.Get(name.String(), "action").String() != "Predicted" && gjson.Get(name.String(), "action").String() != "Started" {
+				predictionbar.Set("disabled", true)
+				submitbutton.Set("disabled", true)
+				numberbar.Set("disabled", false)
+				continue
+			}
 			if gjson.Get(name.String(), "action").String() == "Started" {
-				if window.Get("localStorage").Get("user").String() == "2" {
-					predictionbar.Set("disabled", true)
-					submitbutton.Set("disabled", true)
-					numberbar.Set("disabled", true)
-				} else {
+				if window.Get("localStorage").Get("user").String() == "1" {
 					predictionbar.Set("disabled", false)
 					submitbutton.Set("disabled", false)
-					numberbar.Set("disabled", false)
+					numberbar.Set("disabled", true)
+					continue
+				} else {
+					numberbar.Set("disabled", true)
 				}
-				continue
-			} else {
+			}
+			if gjson.Get(name.String(), "action").String() == "Predicted" {
 				if gjson.Get(name.String(), "session.predictor").String() == window.Get("localStorage").Get("user").String() {
 					predictionbar.Set("disabled", true)
 					submitbutton.Set("disabled", true)
@@ -195,11 +202,9 @@ func CreateTable(moves string) {
 				} else {
 					predictionbar.Set("disabled", false)
 					submitbutton.Set("disabled", false)
-					numberbar.Set("disabled", false)
+					numberbar.Set("disabled", true)
 				}
-
 			}
-
 		}
 		if gjson.Get(name.String(), "action").String() != "Predicted" {
 			continue
@@ -233,6 +238,7 @@ func registerCallbacks() {
 func main() {
 	c := make(chan bool)
 	GetData()
+	go ConnectWebsocket("ws://"+window.Get("location").Get("hostname").String()+":8080/backend/Connect", "{\"user\": "+window.Get("localStorage").Get("user").String()+", \"session\": "+window.Get("localStorage").Get("session").String()+"}")
 	registerCallbacks()
 	<-c
 }

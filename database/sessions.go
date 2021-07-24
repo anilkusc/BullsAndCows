@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"log"
 	"strconv"
 
 	models "github.com/anilkusc/BullsAndCows/models"
@@ -40,7 +39,6 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 
 	for rows.Next() {
 		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id, &session.Player1.Name, &session.Player2.Id, &session.Player2.Name, &session.Player1Number, &session.Player2Number, &session.Predictor, &session.Start, &session.End, &session.Winner)
-		log.Println(err)
 		if err != nil {
 			return session, err
 		}
@@ -53,11 +51,11 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 }
 func (s *Session) UpdateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Predictor=?,Start=?,End=?,Winner=?,Player1Id=?,Player1Name=?,Player1Number=?,Player2Id=?,Player2Name=?,Player2Number=? where Id=?")
+	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Predictor=?,Start=?,End=?,Winner=?,Player1Id=?,Player1Name=?,Player1Number=?,Player2Id=?,Player2Name=?,Player2Number=?,Turn=? where Id=?")
 	if err != nil {
 		return session, err
 	}
-	statement.Exec(session.Date, session.Predictor, session.Start, session.End, session.Winner, session.Player1.Id, session.Player1.Name, session.Player1Number, session.Player2.Id, session.Player2.Name, session.Player2Number, session.Id)
+	statement.Exec(session.Date, session.Predictor, session.Start, session.End, session.Winner, session.Player1.Id, session.Player1.Name, session.Player1Number, session.Player2.Id, session.Player2.Name, session.Player2Number, session.Turn, session.Id)
 	statement.Close()
 	return session, nil
 
