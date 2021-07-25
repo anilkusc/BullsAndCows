@@ -19,11 +19,10 @@ RUN rm main.go && rm game.go
 FROM alpine
 RUN apk add python3 bash
 WORKDIR /application
-
 COPY --from=build_frontend /src/frontend /application
 COPY --from=build_backend /bin/app /application/app
 COPY ./entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./app
 RUN chmod +x entrypoint.sh
-ENTRYPOINT ["/bin/bash","-c"]
+ENTRYPOINT ["/bin/bash"]
 CMD ["entrypoint.sh"]
