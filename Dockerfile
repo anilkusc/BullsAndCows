@@ -7,7 +7,7 @@ COPY . .
 RUN rm -fr ./frontend && rm -fr ./frontend && rm -fr ./ui-test
 RUN go build -a -ldflags "-linkmode external -extldflags '-static' -s -w" -o /bin/app .
 
-FROM golang:1.16
+FROM golang:1.16 as build_frontend
 WORKDIR /src/frontend
 COPY ./frontend .
 RUN ls -al && cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
