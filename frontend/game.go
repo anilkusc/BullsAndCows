@@ -109,14 +109,13 @@ func ConnectWebsocket(URL string, message string) {
 		moves := reponse.Array()
 		move := moves[len(moves)-1].String()
 		if gjson.Get(move, "action").String() == "End" || gjson.Get(move, "action").String() == "Abandoned" {
-			predictiontitle := doc.Call("getElementById", "predictiontitle")
-			title := "WINNER IS " + gjson.Get(move, "session.winner").String()
+			message := "WINNER IS " + gjson.Get(move, "session.winner").String()
 			numberbar := doc.Call("getElementById", "numberbar")
 			numberbar.Set("disabled", true)
-			predictiontitle.Set("innerHTML", title)
-			log.Println(move)
-			log.Println(title)
+			abandonbutton := doc.Call("getElementById", "abandonbutton")
+			abandonbutton.Set("disabled", true)
 			ws.Call("close")
+			window.Call("alert", message)
 		}
 
 		CreateTable(args[0].Get("data").String())
@@ -219,7 +218,7 @@ func CreateTable(moves string) {
 			submitbutton := doc.Call("getElementById", "submitbutton")
 			predictionbar := doc.Call("getElementById", "predictionbar")
 			numberbar := doc.Call("getElementById", "numberbar")
-			if gjson.Get(name.String(), "action").String() != "Predicted" && gjson.Get(name.String(), "action").String() != "Started" {
+			if gjson.Get(name.String(), "action").String() != "Predicted" && gjson.Get(name.String(), "action").String() != "Started" && gjson.Get(name.String(), "action").String() != "Abandoned" {
 				predictionbar.Set("disabled", true)
 				submitbutton.Set("disabled", true)
 				numberbar.Set("disabled", false)
