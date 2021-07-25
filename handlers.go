@@ -428,3 +428,55 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, string(returnValue))
 	return
 }
+
+// AbandonGameHandler method finishes the game.
+func (a *App) AbandonGameHandler(w http.ResponseWriter, r *http.Request) {
+	type AbandonGame struct {
+		User    int `json:"user"`
+		Session int `json:"session"`
+	}
+	log.Println("1")
+	var abandonGame AbandonGame
+	err := json.NewDecoder(r.Body).Decode(&abandonGame)
+	if err != nil {
+		log.Println("Error decoding prediction")
+		io.WriteString(w, `{"error":"Error decoding prediction"}`)
+		return
+	}
+
+	session, err := s.ReadSession(a.DB, abandonGame.Session)
+	if err != nil {
+		log.Println("There is no such a session with id: ", strconv.Itoa(abandonGame.Session))
+		io.WriteString(w, `{"error":"There is no such a session with id: `+strconv.Itoa(abandonGame.Session)+`"}`)
+		return
+	}
+
+	move := models.Move{
+		Session: session,
+		Action:  "Abandoned",
+	}
+	session.End = 1
+	if abandonGame.User == 1 {
+		session.Winner = 2
+	} else {
+		session.Winner = 1
+	}
+
+	move.Session = session
+	move, err = m.CreateMove(a.DB, move)
+	if err != nil {
+		log.Println("Error creating move")
+		io.WriteString(w, `{"error":"Error creating move"}`)
+		return
+	}
+
+	returnValue, err := json.Marshal(move)
+	if err != nil {
+		log.Println("Error marshalling move")
+		io.WriteString(w, `{"error":"Error marshalling move"}`)
+		return
+	}
+
+	io.WriteString(w, string(returnValue))
+	return
+}

@@ -21,6 +21,31 @@ var (
 	body   = doc.Get("body")
 )
 
+func AbandonGame(this js.Value, inputs []js.Value) interface{} {
+	go func() {
+		body := strings.NewReader("{ \"user\": " + window.Get("localStorage").Get("user").String() + " , \"session\": " + window.Get("localStorage").Get("session").String() + " }")
+		log.Println(body)
+		req, err := http.NewRequest("POST", "http://"+window.Get("location").Get("hostname").String()+":8080/backend/AbandonGame", body)
+		if err != nil {
+			log.Println(err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Println(err)
+		}
+		submitbutton := doc.Call("getElementById", "submitbutton")
+		numberbar := doc.Call("getElementById", "numberbar")
+		abandonbutton := doc.Call("getElementById", "abandonbutton")
+		submitbutton.Set("disabled", true)
+		numberbar.Set("disabled", true)
+		abandonbutton.Set("disabled", true)
+		defer resp.Body.Close()
+	}()
+	return nil
+}
+
 func MakePrediction(this js.Value, inputs []js.Value) interface{} {
 	go func() {
 		if inputs[0].String() == "" {
@@ -83,9 +108,11 @@ func ConnectWebsocket(URL string, message string) {
 		reponse := gjson.Get(args[0].Get("data").String(), "@this")
 		moves := reponse.Array()
 		move := moves[len(moves)-1].String()
-		if gjson.Get(move, "action").String() == "End" {
+		if gjson.Get(move, "action").String() == "End" || gjson.Get(move, "action").String() == "Abandoned" {
 			predictiontitle := doc.Call("getElementById", "predictiontitle")
 			title := "WINNER IS " + gjson.Get(move, "session.winner").String()
+			numberbar := doc.Call("getElementById", "numberbar")
+			numberbar.Set("disabled", true)
 			predictiontitle.Set("innerHTML", title)
 			log.Println(move)
 			log.Println(title)
@@ -247,6 +274,7 @@ func CreateTable(moves string) {
 func registerCallbacks() {
 	js.Global().Set("GetReady", js.FuncOf(GetReady))
 	js.Global().Set("MakePrediction", js.FuncOf(MakePrediction))
+	js.Global().Set("AbandonGame", js.FuncOf(AbandonGame))
 }
 
 func main() {
