@@ -6,6 +6,7 @@ package main
 //TODO: add winner logic
 
 import (
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -156,14 +157,13 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 		if err != nil {
 			log.Println(err)
 		}
-		//a, _ := ioutil.ReadAll(resp.Body)
-		//bodyString := string(a)
-		submitbutton := doc.Call("getElementById", "submitbutton")
-		readybutton := doc.Call("getElementById", "readybutton")
-		numberbar := doc.Call("getElementById", "numberbar")
-		submitbutton.Set("disabled", false)
-		readybutton.Set("disabled", true)
-		numberbar.Set("disabled", true)
+		response, _ := ioutil.ReadAll(resp.Body)
+		bodyString := string(response)
+		if gjson.Get(bodyString, "action").String() == "Ready1" || gjson.Get(bodyString, "action").String() == "Ready2" || gjson.Get(bodyString, "action").String() == "Started" {
+			//abandonbutton := doc.Call("getElementById", "abandonbutton")
+			readybutton := doc.Call("getElementById", "readybutton")
+			readybutton.Set("disabled", true)
+		}
 		defer resp.Body.Close()
 	}()
 	return nil
@@ -218,12 +218,10 @@ func CreateTable(moves string) {
 			submitbutton := doc.Call("getElementById", "submitbutton")
 			predictionbar := doc.Call("getElementById", "predictionbar")
 			numberbar := doc.Call("getElementById", "numberbar")
-			if gjson.Get(name.String(), "action").String() != "Predicted" && gjson.Get(name.String(), "action").String() != "Started" && gjson.Get(name.String(), "action").String() != "Abandoned" {
-				predictionbar.Set("disabled", true)
-				submitbutton.Set("disabled", true)
-				numberbar.Set("disabled", false)
-				continue
-			}
+			//abandonbutton := doc.Call("getElementById", "abandonbutton")
+			//readybutton := doc.Call("getElementById", "readybutton")
+			//TODO : All the cases should be in switch case like "Predicted","Started" etc.
+			//TODO: find a way to disable ready button when get ready
 			if gjson.Get(name.String(), "action").String() == "Started" {
 				if window.Get("localStorage").Get("user").String() == "1" {
 					predictionbar.Set("disabled", false)

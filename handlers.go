@@ -167,7 +167,12 @@ func (a *App) GetReadyHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"Error decoding getReady"}`)
 		return
 	}
-
+	err = logic.IsNumberLegal(getReady.Number)
+	if err != nil {
+		log.Println("Your number is illegal: ", err)
+		io.WriteString(w, `{"error":"Your number is illegal"}`)
+		return
+	}
 	if getReady.User >= 3 || getReady.User <= 0 {
 		log.Println("Neither Player 1 Nor Player 2")
 		io.WriteString(w, `{"error":"Neither Player 1 Nor Player 2"}`)
@@ -322,6 +327,7 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		User    int `json:"user"`
 		Session int `json:"session"`
 	}
+
 	var prediction Prediction
 	err := json.NewDecoder(r.Body).Decode(&prediction)
 	if err != nil {
@@ -329,7 +335,12 @@ func (a *App) MakePredictionHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"Error decoding prediction"}`)
 		return
 	}
-
+	err = logic.IsNumberLegal(prediction.Number)
+	if err != nil {
+		log.Println("Predicted number is illegal: ", err)
+		io.WriteString(w, `{"error":"Predicted number is illegal"}`)
+		return
+	}
 	session, err := s.ReadSession(a.DB, prediction.Session)
 	if err != nil {
 		log.Println("Error getting session")

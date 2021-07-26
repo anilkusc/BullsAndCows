@@ -1,11 +1,31 @@
 package logic
 
 import (
+	"errors"
 	"strconv"
 
 	models "github.com/anilkusc/BullsAndCows/models"
 )
 
+func IsNumberLegal(number int) error {
+	if number < 1000 || number > 9999 {
+		return errors.New("Number does not have 4 digits.")
+	}
+	numbers := strconv.Itoa(number)
+	// TODO: optimize this control
+	for i := 0; i < len(numbers); i++ {
+		for j := 0; j < len(numbers); j++ {
+			if i == j {
+				continue
+			}
+			if numbers[i] == numbers[j] {
+				return errors.New("Duplicated Digits")
+			}
+		}
+	}
+	return nil
+
+}
 func CalculateClue(prediction int, actualNumber int) (models.Clue, error) {
 	var clue models.Clue
 
