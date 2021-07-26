@@ -1,2 +1,5 @@
 test.db
 .vscode/
+./frontend/game.wasm
+./frontend/main.wasm
+./frontend/wasm_exec.js
