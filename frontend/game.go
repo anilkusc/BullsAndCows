@@ -248,7 +248,7 @@ func CreateTable(moves string) {
 			continue
 		}
 		tr := doc.Call("createElement", "tr")
-		historytablebody.Call("appendChild", tr)
+		historytablebody.Call("prepend", tr)
 		td_id := doc.Call("createElement", "td")
 		td_id.Set("innerHTML", gjson.Get(name.String(), "id").String())
 		tr.Call("appendChild", td_id)
