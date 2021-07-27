@@ -244,7 +244,7 @@ func CreateTable(moves string) {
 				}
 			}
 		}
-		if gjson.Get(name.String(), "action").String() != "Predicted" {
+		if gjson.Get(name.String(), "action").String() != "Predicted" && gjson.Get(name.String(), "action").String() != "End" {
 			continue
 		}
 		tr := doc.Call("createElement", "tr")

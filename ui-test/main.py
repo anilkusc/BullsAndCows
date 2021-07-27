@@ -42,11 +42,11 @@ predictionbar2.send_keys("4567")
 driver2.find_element_by_id("submitbutton").click()
 time.sleep(1)
 
-driver1.find_element_by_id("abandonbutton").click()
-"""
+#driver1.find_element_by_id("abandonbutton").click()
+
 predictionbar3 = driver1.find_element_by_id("predictionbar")
 predictionbar3.clear()
 predictionbar3.send_keys("1234")
 driver1.find_element_by_id("submitbutton").click()
-"""
+
 #driver2.close()
