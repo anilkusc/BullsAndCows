@@ -17,7 +17,7 @@ var (
 	window = js.Global()
 )
 
-func CreateGameRequest(URI string, userName string) {
+func CreateGameRequest(URI string, userName string, password string) {
 
 	type Payload struct {
 		Name string `json:"name"`
@@ -36,6 +36,7 @@ func CreateGameRequest(URI string, userName string) {
 		log.Println(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Password", password)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -51,7 +52,7 @@ func CreateGameRequest(URI string, userName string) {
 	defer resp.Body.Close()
 }
 
-func JoinGameRequest(URI string, sessionId string, userName string) {
+func JoinGameRequest(URI string, sessionId string, userName string, password string) {
 
 	type User struct {
 		Name string `json:"name"`
@@ -82,6 +83,7 @@ func JoinGameRequest(URI string, sessionId string, userName string) {
 		log.Println(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Password", password)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -97,12 +99,12 @@ func JoinGameRequest(URI string, sessionId string, userName string) {
 }
 
 func CreateGame(this js.Value, inputs []js.Value) interface{} {
-	go CreateGameRequest("/backend/CreateGame", inputs[0].String())
+	go CreateGameRequest("/backend/CreateGame", inputs[0].String(), inputs[1].String())
 	return nil
 }
 
 func JoinGame(this js.Value, inputs []js.Value) interface{} {
-	go JoinGameRequest("/backend/JoinGame", inputs[0].String(), inputs[1].String())
+	go JoinGameRequest("/backend/JoinGame", inputs[0].String(), inputs[1].String(), inputs[2].String())
 	return nil
 }
 

@@ -15,11 +15,11 @@ type Session struct {
 
 func (s *Session) CreateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	statement, err := db.Prepare("INSERT INTO Sessions (Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name) VALUES(?,?,?,?,?,?)")
+	statement, err := db.Prepare("INSERT INTO Sessions (Date,Turn,Player1Id,Player1Name,Player2Id,Player2Name,Password) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		return session, err
 	}
-	res, _ := statement.Exec(session.Date, session.Turn, session.Player1.Id, session.Player1.Name, session.Player2.Id, session.Player2.Name)
+	res, _ := statement.Exec(session.Date, session.Turn, session.Player1.Id, session.Player1.Name, session.Player2.Id, session.Player2.Name, session.Password)
 	statement.Close()
 	id, _ := res.LastInsertId()
 	session.Id = int(id)
@@ -38,7 +38,7 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id, &session.Player1.Name, &session.Player2.Id, &session.Player2.Name, &session.Player1Number, &session.Player2Number, &session.Predictor, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id, &session.Player1.Name, &session.Player2.Id, &session.Player2.Name, &session.Player1Number, &session.Player2Number, &session.Predictor, &session.Start, &session.End, &session.Winner, &session.Password)
 		if err != nil {
 			return session, err
 		}
@@ -51,11 +51,11 @@ func (s *Session) ReadSession(db *sql.DB, id int) (models.Session, error) {
 }
 func (s *Session) UpdateSession(db *sql.DB, session models.Session) (models.Session, error) {
 
-	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Predictor=?,Start=?,End=?,Winner=?,Player1Id=?,Player1Name=?,Player1Number=?,Player2Id=?,Player2Name=?,Player2Number=?,Turn=? where Id=?")
+	statement, err := db.Prepare("UPDATE Sessions SET Date=?,Predictor=?,Start=?,End=?,Winner=?,Player1Id=?,Player1Name=?,Player1Number=?,Player2Id=?,Player2Name=?,Player2Number=?,Turn=?,Password=? where Id=?")
 	if err != nil {
 		return session, err
 	}
-	statement.Exec(session.Date, session.Predictor, session.Start, session.End, session.Winner, session.Player1.Id, session.Player1.Name, session.Player1Number, session.Player2.Id, session.Player2.Name, session.Player2Number, session.Turn, session.Id)
+	statement.Exec(session.Date, session.Predictor, session.Start, session.End, session.Winner, session.Player1.Id, session.Player1.Name, session.Player1Number, session.Player2.Id, session.Player2.Name, session.Player2Number, session.Turn, session.Password, session.Id)
 	statement.Close()
 	return session, nil
 
@@ -89,7 +89,7 @@ func (s *Session) ListSessions(db *sql.DB) ([]models.Session, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var session models.Session
-		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id, &session.Player1.Name, &session.Player2.Id, &session.Player2.Name, &session.Player1Number, &session.Player2Number, &session.Predictor, &session.Start, &session.End, &session.Winner)
+		err := rows.Scan(&session.Id, &session.Date, &session.Turn, &session.Player1.Id, &session.Player1.Name, &session.Player2.Id, &session.Player2.Name, &session.Player1Number, &session.Player2Number, &session.Predictor, &session.Start, &session.End, &session.Winner, &session.Password)
 		if err != nil {
 			return sessions, err
 		}

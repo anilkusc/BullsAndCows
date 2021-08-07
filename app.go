@@ -44,7 +44,7 @@ func (a *App) Init(database string) error {
 		statement.Exec()
 		log.Println("Created Users table")
 
-		query = "CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL DEFAULT 0,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER DEFAULT 0,Player2Number INTEGER DEFAULT 0,Predictor INTEGER DEFAULT 0,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0);"
+		query = "CREATE TABLE Sessions (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Date TEXT NOT NULL,Turn INTEGER NOT NULL DEFAULT 0,Player1Id INTEGER,Player1Name TEXT,Player2Id INTEGER,Player2Name TEXT,Player1Number INTEGER DEFAULT 0,Player2Number INTEGER DEFAULT 0,Predictor INTEGER DEFAULT 0,Start INTEGER NOT NULL DEFAULT 0,End INTEGER NOT NULL DEFAULT 0,Winner INTEGER NOT NULL DEFAULT 0,Password TEXT);"
 		statement, err = a.DB.Prepare(query)
 		if err != nil {
 			log.Fatal(err)

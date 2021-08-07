@@ -2,6 +2,8 @@ package main
 
 //TODO:prediction control (is it have 4 digits and are the digits same ?)
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -38,6 +40,11 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	bodyString, _ := ioutil.ReadAll(r.Body)
 	var user models.User
 
+	//Hash the password
+	hasher := md5.New()
+	hasher.Write([]byte(r.Header.Get("Password")))
+	password := hex.EncodeToString(hasher.Sum(nil))
+
 	err := json.Unmarshal([]byte(string(bodyString)), &user)
 	if err != nil {
 		log.Println("Error decoding user", err)
@@ -53,6 +60,7 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	var session models.Session
 	session.Date = time.Now().Format("02-Jan-2006")
 	session.Player1 = user
+	session.Password = password
 	session, err = s.CreateSession(a.DB, session)
 	if err != nil {
 		log.Println("Error creating session")
@@ -96,6 +104,11 @@ func (a *App) JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 		Session models.Session `json:"session"`
 		User    models.User    `json:"user"`
 	}
+
+	hasher := md5.New()
+	hasher.Write([]byte(r.Header.Get("Password")))
+	password := hex.EncodeToString(hasher.Sum(nil))
+
 	bodyString, _ := ioutil.ReadAll(r.Body)
 	var joinGame JoinGame
 
@@ -112,7 +125,11 @@ func (a *App) JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"There is no such a session with id: `+strconv.Itoa(joinGame.Session.Id)+`"}`)
 		return
 	}
-
+	if session.Password != password {
+		log.Println("Wrong Session Password")
+		io.WriteString(w, `{"error":"Wrong Session Password"`)
+		return
+	}
 	if session.Player2.Name == "" {
 		user, err := u.CreateUser(a.DB, joinGame.User)
 		if err != nil {

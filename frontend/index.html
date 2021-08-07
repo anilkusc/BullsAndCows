@@ -28,8 +28,9 @@
             <div class="card-body">
               <div class="input-group mb-3">
                 <input type="text" class="form-control" id="username" placeholder="Username">
+                <input type="text" class="form-control" id="password" placeholder="Password">
               </div>
-              <button onClick="CreateGame(username.value)" id="create" class="btn btn-primary">Create</button>
+              <button onClick="CreateGame(username.value,password.value)" id="create" class="btn btn-primary">Create</button>
             </div>
           </div>
         </div>
@@ -42,8 +43,9 @@
               <div class="input-group mb-3">
                 <input type="text" class="form-control"  id="joinusername" placeholder="Username">
                 <input type="text" class="form-control"  id="joinsession" placeholder="Session ID">
+                <input type="text" class="form-control"  id="joinpassword" placeholder="Password">
               </div>
-              <button onClick="JoinGame(joinsession.value,joinusername.value)" id="join" class="btn btn-primary">Join Game</button>
+              <button onClick="JoinGame(joinsession.value,joinusername.value,joinpassword.value)" id="join" class="btn btn-primary">Join Game</button>
             </div>
           </div>
         </div>

@@ -10,8 +10,8 @@ func Inbound(next http.HandlerFunc) http.HandlerFunc {
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST")
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type,Secret,User,Session")
-		w.Header().Set("Access-Control-Expose-Headers", "Secret,User,Session")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type,Secret,User,Session,Password")
+		w.Header().Set("Access-Control-Expose-Headers", "Secret,User,Session,Password")
 		next(w, r)
 	}
 }
