@@ -6,8 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-
-	//"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -79,6 +78,13 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"Error marshalling move"}`)
 		return
 	}
+	x1 := rand.NewSource(time.Now().UnixNano())
+	y1 := rand.New(x1)
+	secret := y1.Intn(10000000000)
+	store[session.Id] = map[int]int{}
+	store[session.Id][1] = secret
+	log.Println(store)
+	w.Header().Add("Secret", strconv.Itoa(secret))
 	io.WriteString(w, string(returnValue))
 	return
 }
@@ -146,6 +152,11 @@ func (a *App) JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"error":"Error marshalling move"}`)
 		return
 	}
+	x1 := rand.NewSource(time.Now().UnixNano())
+	y1 := rand.New(x1)
+	secret := y1.Intn(10000000000)
+	store[session.Id][2] = secret
+	w.Header().Add("Secret", strconv.Itoa(secret))
 	io.WriteString(w, string(returnValue))
 	return
 }

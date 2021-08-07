@@ -8,7 +8,6 @@ import (
 
 	//"fmt"
 	"github.com/gorilla/mux"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // App method is the main struct for the application
@@ -91,8 +90,8 @@ func (a *App) Run(addr string) {
 func (a *App) InitRoutes() {
 	a.Router.HandleFunc("/backend/CreateGame", Inbound(a.CreateGameHandler))
 	a.Router.HandleFunc("/backend/JoinGame", Inbound(a.JoinGameHandler))
-	a.Router.HandleFunc("/backend/AbandonGame", Inbound(a.AbandonGameHandler))
-	a.Router.HandleFunc("/backend/GetReady", Inbound(a.GetReadyHandler))
-	a.Router.HandleFunc("/backend/MakePrediction", Inbound(a.MakePredictionHandler))
+	a.Router.HandleFunc("/backend/AbandonGame", Inbound(Auth(a.AbandonGameHandler)))
+	a.Router.HandleFunc("/backend/GetReady", Inbound(Auth(a.GetReadyHandler)))
+	a.Router.HandleFunc("/backend/MakePrediction", Inbound(Auth(a.MakePredictionHandler)))
 	a.Router.HandleFunc("/backend/Connect", a.ConnectHandler)
 }

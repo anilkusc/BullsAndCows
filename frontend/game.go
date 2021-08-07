@@ -25,12 +25,14 @@ var (
 func AbandonGame(this js.Value, inputs []js.Value) interface{} {
 	go func() {
 		body := strings.NewReader("{ \"user\": " + window.Get("localStorage").Get("user").String() + " , \"session\": " + window.Get("localStorage").Get("session").String() + " }")
-		log.Println(body)
 		req, err := http.NewRequest("POST", "http://"+window.Get("location").Get("hostname").String()+":8080/backend/AbandonGame", body)
 		if err != nil {
 			log.Println(err)
 		}
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Secret", window.Get("localStorage").Get("secret").String())
+		req.Header.Set("User", window.Get("localStorage").Get("user").String())
+		req.Header.Set("Session", window.Get("localStorage").Get("session").String())
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
@@ -58,6 +60,9 @@ func MakePrediction(this js.Value, inputs []js.Value) interface{} {
 			log.Println(err)
 		}
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Secret", window.Get("localStorage").Get("secret").String())
+		req.Header.Set("User", window.Get("localStorage").Get("user").String())
+		req.Header.Set("Session", window.Get("localStorage").Get("session").String())
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
@@ -152,6 +157,9 @@ func GetReady(this js.Value, inputs []js.Value) interface{} {
 			log.Println(err)
 		}
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Secret", window.Get("localStorage").Get("secret").String())
+		req.Header.Set("User", window.Get("localStorage").Get("user").String())
+		req.Header.Set("Session", window.Get("localStorage").Get("session").String())
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
@@ -173,8 +181,6 @@ func GetData() {
 
 	sessionId := doc.Call("getElementById", "session")
 	sessionId.Set("innerHTML", window.Get("localStorage").Get("session").String())
-	whosplaying := doc.Call("getElementById", "players")
-	whosplaying.Set("innerHTML", window.Get("localStorage").Get("players").String())
 
 }
 

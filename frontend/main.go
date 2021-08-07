@@ -44,11 +44,9 @@ func CreateGameRequest(URI string, userName string) {
 	a, _ := ioutil.ReadAll(resp.Body)
 	bodyString := string(a)
 
-	window.Get("localStorage").Set("players", gjson.Get(bodyString, "session.player1.name").String()+"-"+gjson.Get(bodyString, "session.player2.name").String())
 	window.Get("localStorage").Set("session", gjson.Get(bodyString, "session.id").String())
-	window.Get("localStorage").Set("username", gjson.Get(bodyString, "session.player1.name").String())
-	window.Get("localStorage").Set("userid", gjson.Get(bodyString, "session.player1.id").String())
 	window.Get("localStorage").Set("user", "1")
+	window.Get("localStorage").Set("secret", resp.Header.Get("Secret"))
 	window.Set("location", "game.html")
 	defer resp.Body.Close()
 }
@@ -91,12 +89,9 @@ func JoinGameRequest(URI string, sessionId string, userName string) {
 	}
 	a, _ := ioutil.ReadAll(resp.Body)
 	bodyString := string(a)
-
-	window.Get("localStorage").Set("players", gjson.Get(bodyString, "session.player1.name").String()+"-"+gjson.Get(bodyString, "session.player2.name").String())
 	window.Get("localStorage").Set("session", gjson.Get(bodyString, "session.id").String())
-	window.Get("localStorage").Set("username", gjson.Get(bodyString, "session.player2.name").String())
-	window.Get("localStorage").Set("userid", gjson.Get(bodyString, "session.player2.id").String())
 	window.Get("localStorage").Set("user", "2")
+	window.Get("localStorage").Set("secret", resp.Header.Get("Secret"))
 	window.Set("location", "game.html")
 	defer resp.Body.Close()
 }

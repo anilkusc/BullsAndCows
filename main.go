@@ -1,5 +1,9 @@
 package main
 
+var (
+	store = make(map[int]map[int]int)
+)
+
 func main() {
 
 	a := App{}
