@@ -91,7 +91,6 @@ func (a *App) CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	secret := y1.Intn(10000000000)
 	store[session.Id] = map[int]int{}
 	store[session.Id][1] = secret
-	log.Println(store)
 	w.Header().Add("Secret", strconv.Itoa(secret))
 	io.WriteString(w, string(returnValue))
 	return

@@ -12,6 +12,11 @@ func Inbound(next http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Methods", "POST")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type,Secret,User,Session,Password")
 		w.Header().Set("Access-Control-Expose-Headers", "Secret,User,Session,Password")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("OK"))
+			return
+		}
 		next(w, r)
 	}
 }
